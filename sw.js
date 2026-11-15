@@ -1,4 +1,4 @@
-const CACHE = 'dbt-offline-v1';
+const CACHE = 'dbt-offline-v2';
 const FILES = [
   './',
   './index.html',
@@ -7,11 +7,23 @@ const FILES = [
   './pros_cons.html',
   './trud.pdf',
   './stop.pdf',
-  './pros_cons.pdf'
+  './pros_cons.pdf',
+  './manifest.json',
+  './icon.png'
 ];
 
 self.addEventListener('install', e => {
+  self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', e => {
