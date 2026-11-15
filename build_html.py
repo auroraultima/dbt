@@ -327,6 +327,22 @@ INDEX = r"""<!doctype html>
   .scard{grid-template-columns:44px 1fr;padding:16px}
   .scard .go{grid-column:2;margin-top:4px}
 }
+
+.guide-box{margin:18px 0 0;border:1px solid var(--a-mid);border-radius:14px;background:var(--a-tint);overflow:hidden}
+.guide-box summary{padding:14px 18px;font-weight:700;font-size:15px;color:var(--a-deep);cursor:pointer;list-style:none;
+  display:flex;align-items:center;justify-content:space-between;user-select:none;transition:.18s var(--ease)}
+.guide-box summary::-webkit-details-marker{display:none}
+.guide-box summary:hover{background:var(--a-soft)}
+.guide-box summary::after{content:"+";font-size:20px;font-weight:400;line-height:1;color:var(--a-main);transition:.2s var(--ease)}
+.guide-box[open] summary{border-bottom:1px solid var(--a-mid);background:var(--a-soft)}
+.guide-box[open] summary::after{transform:rotate(45deg)}
+.guide-body{padding:16px 18px;font-size:14.5px;line-height:1.55;color:var(--ink)}
+.guide-body h4{font-family:'PT Serif',Georgia,serif;font-size:16.5px;margin:14px 0 6px;color:var(--a-deep)}
+.guide-body h4:first-child{margin-top:0}
+.guide-body ul{margin:0;padding-left:18px}
+.guide-body li{margin-bottom:5px}
+
+
 </style>
 </head>
 <body>
@@ -395,6 +411,33 @@ INDEX = r"""<!doctype html>
         <p>Откройте <b>СТОП</b>, чтобы не написать и не сделать лишнего, а затем взвесьте последствия в <b>«За / против»</b>. Если уже трясёт — нажмите кнопку «Накрывает сейчас» внизу.</p>
       </div>
     </div>
+    
+    <details class="guide-box">
+      <summary>Как пользоваться приложением и установить на телефон</summary>
+      <div class="guide-body">
+        <h4>1. Установка на главный экран (работает без интернета)</h4>
+        <ul>
+          <li><b>Android (Chrome):</b> нажмите три точки в правом верхнем углу → <b>«Установить приложение»</b>.</li>
+          <li><b>iPhone (Safari):</b> нажмите кнопку <b>«Поделиться»</b> внизу → <b>«На экран „Домой“»</b>.</li>
+          <li>После первого открытия все страницы, таймеры и PDF сохраняются в память телефона и работают в авиарежиме.</li>
+        </ul>
+
+        <h4>2. Подготовка в спокойный день</h4>
+        <ul>
+          <li>Внизу любой страницы навыка (раздел <b>07</b>) заполните <b>«Мою карточку на кризис»</b>: ваши сигналы, контакты поддержки и способы заземления.</li>
+          <li>В буклете <b>«За / против»</b> заранее впишите аргументы для 1–2 частых импульсов — в стрессе останется только прочитать готовое.</li>
+          <li>Все записи хранятся <b>только в памяти вашего телефона</b> и никуда не отправляются.</li>
+        </ul>
+
+        <h4>3. Когда накрывает прямо сейчас</h4>
+        <ul>
+          <li><b>Накал 8–10 (трясёт, трудно думать):</b> нажмите кнопку <b>«Накрывает сейчас»</b> внизу или откройте <b>ТРУД</b> — начните с холодной воды (таймер 30 сек) или нагрузки.</li>
+          <li><b>Накал 5–7 (сильный импульс сорваться):</b> откройте <b>СТОП</b>, сделайте паузу и взвесьте последствия в <b>«За / против»</b>.</li>
+          <li>После шага можно отметить накал в <b>«Дневнике практики»</b> или скопировать записи одной кнопкой для терапевта.</li>
+        </ul>
+      </div>
+    </details>
+
     <div class="callout" style="margin-top:18px">
       <b>Важно.</b> {{SAFETY}}
     </div>
