@@ -1,6 +1,6 @@
 {
-  "name": "ДБТ/Самопомощь",
-  "short_name": "Навыки ДБТ",
+  "name": "\u0414\u0411\u0422/\u0421\u0430\u043c\u043e\u043f\u043e\u043c\u043e\u0449\u044c",
+  "short_name": "\u041d\u0430\u0432\u044b\u043a\u0438 \u0414\u0411\u0422",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
