@@ -1,4 +1,4 @@
-const CACHE = 'dbt-offline-v3';
+const CACHE = 'dbt-offline';
 const FILES = [
   './',
   './index.html',
@@ -28,6 +28,12 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
+    fetch(e.request)
+      .then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copy));
+        return res;
+      })
+      .catch(() => caches.match(e.request))
   );
 });
