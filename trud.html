@@ -380,6 +380,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   <span class="nav-brand">Навыки ДБТ при ПРЛ<span>Навыки выживания в кризисе</span></span>
   <a class="tab on" href="trud.html">ТРУД</a>
   <a class="tab " href="stop.html">СТОП</a>
+  <a class="tab " href="pros_cons.html">ЗА/ПРОТИВ</a>
   <a class="tab icon" href="trud.pdf" download><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 2.5v9"/><path d="M4.4 8.2 8 11.8l3.6-3.6"/><path d="M2.8 13.5h10.4"/></svg>PDF</a>
   <button class="tab icon" type="button" id="print-btn"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4.5 6V2.5h7V6"/><rect x="2.5" y="6" width="11" height="5" rx="1.4"/><path d="M4.5 9.5h7v4h-7z"/></svg>Печать</button>
 </div><div class="progress"><i id="progress-bar"></i></div></nav>
@@ -1072,7 +1073,91 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     host.appendChild(rateRow("СТОП · П (после шага)", function (v) { addLog("СТОП · П (после шага)", v, chosen); }));
   }
 
-  var TOOLS = { cold: toolCold, relax: toolRelax, move: toolMove, breath: toolBreath, freeze: toolFreeze, pause: toolPause, observe: toolObserve, wise: toolWise };
+  /* ---------- ЗА/ПРОТИВ: интерактивные шаги матрицы ---------- */
+  function getPCData() { return store.get("dbt-pc-matrix", { imp: "", p1: "", c1: "", p2: "", c2: "" }); }
+  function setPCData(d) { store.set("dbt-pc-matrix", d); }
+
+  function toolPC1(host) {
+    var d = getPCData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Практика · формулировка импульса</span><span class="tool-sub">шаг 1</span></div>' +
+      '<div class="field"><label for="pc-imp">Прямо сейчас мне хочется...</label>' +
+      '<input id="pc-imp" type="text" placeholder="Например: написать обвиняющее сообщение / причинить себе боль"></div>' +
+      '<div class="tool-hint" style="margin:8px 0 0">Запись сохраняется автоматически для следующих шагов.</div>';
+    var inp = $("#pc-imp", host);
+    inp.value = d.imp || "";
+    inp.addEventListener("input", function () { var cur = getPCData(); cur.imp = inp.value; setPCData(cur); });
+  }
+
+  function toolPC2(host) {
+    var d = getPCData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Матрица · сторона срыва</span><span class="tool-sub">квадраты 1 и 2</span></div>' +
+      '<div class="fields">' +
+      '<div class="field"><label for="pc-p1">ЗА срыв (выгода в ближайшие 5 мин)</label><textarea id="pc-p1" rows="3" placeholder="Сброшу напряжение, получу реакцию сейчас..."></textarea></div>' +
+      '<div class="field"><label for="pc-c1">ПРОТИВ срыва (цена завтра и через неделю)</label><textarea id="pc-c1" rows="3" placeholder="Стыд, испорченные отношения, откат..."></textarea></div>' +
+      '</div>';
+    var p1 = $("#pc-p1", host), c1 = $("#pc-c1", host);
+    p1.value = d.p1 || ""; c1.value = d.c1 || "";
+    p1.addEventListener("input", function () { var cur = getPCData(); cur.p1 = p1.value; setPCData(cur); });
+    c1.addEventListener("input", function () { var cur = getPCData(); cur.c1 = c1.value; setPCData(cur); });
+  }
+
+  function toolPC3(host) {
+    var d = getPCData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Матрица · сторона сдержанности</span><span class="tool-sub">квадраты 3 и 4</span></div>' +
+      '<div class="fields">' +
+      '<div class="field"><label for="pc-p2">ЗА удержаться (польза сейчас и в долгую)</label><textarea id="pc-p2" rows="3" placeholder="Сохраню самоуважение, завтра скажу себе спасибо..."></textarea></div>' +
+      '<div class="field"><label for="pc-c2">ПРОТИВ удержаться (трудность прямо сейчас)</label><textarea id="pc-c2" rows="3" placeholder="Придётся терпеть тревогу ещё 20–30 минут..."></textarea></div>' +
+      '</div>';
+    var p2 = $("#pc-p2", host), c2 = $("#pc-c2", host);
+    p2.value = d.p2 || ""; c2.value = d.c2 || "";
+    p2.addEventListener("input", function () { var cur = getPCData(); cur.p2 = p2.value; setPCData(cur); });
+    c2.addEventListener("input", function () { var cur = getPCData(); cur.c2 = c2.value; setPCData(cur); });
+  }
+
+  function toolPC4(host) {
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Сводка матрицы и решение</span><span class="tool-sub">шаг 4</span></div>' +
+      '<div class="tool-hint" id="pc-summary" style="color:var(--ink);margin-bottom:12px"></div>' +
+      '<div class="ctrls">' +
+      '<button class="btn ghost sm" type="button" id="pc-refresh"><span>Обновить сводку</span></button>' +
+      '<button class="btn ghost sm" type="button" id="pc-copy"><span>Скопировать матрицу</span></button>' +
+      '</div>';
+    function renderSum() {
+      var d = getPCData();
+      var imp = d.imp ? "Импульс: «" + d.imp + "». " : "";
+      var c1 = d.c1 ? "Цена срыва: " + d.c1 + ". " : "";
+      var p2 = d.p2 ? "Ради чего держусь: " + d.p2 + "." : "";
+      $("#pc-summary", host).textContent = (imp + c1 + p2) || "Заполните поля в шагах 1–3, чтобы увидеть сводку здесь.";
+    }
+    renderSum();
+    $("#pc-refresh", host).addEventListener("click", renderSum);
+    $("#pc-copy", host).addEventListener("click", function () {
+      var d = getPCData();
+      var txt = [
+        "Матрица «За и против»",
+        "Импульс: " + (d.imp || "—"),
+        "ЗА срыв (сейчас): " + (d.p1 || "—"),
+        "ПРОТИВ срыва (потом): " + (d.c1 || "—"),
+        "ЗА удержаться (потом): " + (d.p2 || "—"),
+        "ПРОТИВ удержаться (сейчас): " + (d.c2 || "—")
+      ].join("\n");
+      copyText(txt);
+    });
+    host.appendChild(rateRow("ЗА/ПРОТИВ · после взвешивания", function (v) {
+      var d = getPCData();
+      addLog("ЗА/ПРОТИВ · решение", v, d.imp ? d.imp.slice(0, 50) : "");
+    }));
+  }
+
+  var TOOLS = {
+    cold: toolCold, relax: toolRelax, move: toolMove, breath: toolBreath,
+    freeze: toolFreeze, pause: toolPause, observe: toolObserve, wise: toolWise,
+    pc1: toolPC1, pc2: toolPC2, pc3: toolPC3, pc4: toolPC4
+  };
+
 
   /* ---------- шкала накала ---------- */
   function initScale() {
