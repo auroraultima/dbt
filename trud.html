@@ -27,9 +27,9 @@
   --paper:#FBF8F3; --card:#FFFFFF; --surface:#FFFFFF; --nav-bg:rgba(251,248,243,.9);
   --bg-glow:#F3EFE7; --ink:#23282D; --ink-2:#3A4249; --muted:#6C7580;
   --line:#E8E2D8; --line-dot:#C9C2B6; --neutral:#F7F4EF; --neutral-edge:#D9D2C6; --neutral-lbl:#8A8375;
-
   --ok:#4E7C59; --ok-bg:#EDF3EE; --no:#A9543B; --no-bg:#F8EDE8;
   --a-main:#2C7A8C; --a-deep:#1E5765; --a-mid:#B9D9E0; --a-soft:#E8F2F4; --a-tint:#F4FAFB;
+  --on-main:#FFFFFF;
   --r:18px; --shadow:0 1px 2px rgba(35,40,45,.04), 0 10px 30px rgba(35,40,45,.05);
   --ease:cubic-bezier(.22,.61,.36,1);
 }
@@ -40,9 +40,11 @@
     --line:#2C323B; --line-dot:#3D4552; --neutral:#232830; --neutral-edge:#3A424E; --neutral-lbl:#96A0AD;
     --ok:#6BA87A; --ok-bg:#1D2E22; --no:#D6795E; --no-bg:#33201B;
     --a-main:DARK_#2C7A8C; --a-deep:DARK_#1E5765; --a-mid:DARK_#B9D9E0; --a-soft:DARK_#E8F2F4; --a-tint:DARK_#F4FAFB;
+    --on-main:#11161A;
     --shadow:0 1px 2px rgba(0,0,0,.25), 0 10px 30px rgba(0,0,0,.3);
   }
 }
+
 
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
@@ -69,7 +71,7 @@ a{color:var(--a-deep)}
   backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .nav-in{max-width:720px;margin:0 auto;padding:9px 18px;display:flex;align-items:center;gap:8px}
 .nav-brand{font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);
-  font-weight:700;margin-right:auto;line-height:1.3}
+  font-weight:700;margin-right:auto;line-height:1.3;text-decoration:none}
 .nav-brand span{display:block;color:var(--a-main)}
 .tab{font-size:13px;font-weight:700;text-decoration:none;padding:6px 13px;border-radius:999px;
   border:1px solid var(--line);color:var(--muted);background:var(--surface);transition:.18s var(--ease);white-space:nowrap}
@@ -118,7 +120,7 @@ p{margin:0 0 10px}
 .arow .bl{width:44px;height:44px;border-radius:13px;background:var(--a-soft);border:1px solid var(--a-mid);
   color:var(--a-deep);font-family:'PT Serif',Georgia,serif;font-weight:700;font-size:23px;
   display:flex;align-items:center;justify-content:center;transition:.2s var(--ease)}
-.arow:hover .bl{background:var(--a-main);border-color:var(--a-main);color:#fff}
+.arow:hover .bl{background:var(--a-main);border-color:var(--a-main);color:var(--on-main)}
 .arow .nm{font-weight:700;font-size:17px}
 .arow .hint{font-size:13px;color:var(--muted);text-align:right}
 .cover-cta{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0 0}
@@ -126,7 +128,7 @@ p{margin:0 0 10px}
 
 /* ---------- кнопки ---------- */
 .btn{font:inherit;font-size:14px;font-weight:700;padding:9px 16px;border-radius:999px;cursor:pointer;
-  border:1px solid var(--a-main);background:var(--a-main);color:#fff;transition:.18s var(--ease);
+  border:1px solid var(--a-main);background:var(--a-main);color:var(--on-main);transition:.18s var(--ease);
   display:inline-flex;align-items:center;gap:8px;text-decoration:none;line-height:1.25}
 .btn:hover{background:var(--a-deep);border-color:var(--a-deep);transform:translateY(-1px)}
 .btn:active{transform:translateY(0)}
@@ -185,7 +187,7 @@ ol.how li:before{content:counter(s);position:absolute;left:0;top:.05em;width:22p
 .chain{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:0 0 6px}
 .pill{font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--line);
   background:var(--surface);color:var(--muted)}
-.pill.on{background:var(--a-main);border-color:var(--a-main);color:#fff}
+.pill.on{background:var(--a-main);border-color:var(--a-main);color:var(--on-main)}
 .arrow{color:var(--a-mid);font-weight:700;display:inline-flex}
 .arrow svg{width:15px;height:10px}
 
@@ -221,7 +223,7 @@ ol.how li:before{content:counter(s);position:absolute;left:0;top:.05em;width:22p
 .pick button{font:inherit;font-size:12.5px;padding:5px 11px;border-radius:999px;cursor:pointer;
   border:1px solid var(--line);background:var(--surface);color:var(--muted);transition:.15s var(--ease)}
 .pick button:hover{border-color:var(--a-mid);color:var(--a-deep)}
-.pick button[aria-pressed="true"]{background:var(--a-main);border-color:var(--a-main);color:#fff}
+.pick button[aria-pressed="true"]{background:var(--a-main);border-color:var(--a-main);color:var(--on-main)}
 .rate{display:flex;align-items:center;gap:10px;margin:14px 0 0;padding-top:12px;border-top:1px dashed var(--a-mid);
   flex-wrap:wrap}
 .rate .rl{font-size:12.5px;font-weight:700;color:var(--a-deep)}
@@ -249,7 +251,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 .muscles span{font-size:11.5px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);
   background:var(--surface);color:var(--muted)}
 .muscles span.done{background:var(--a-soft);border-color:var(--a-mid);color:var(--a-deep)}
-.muscles span.now{background:var(--a-main);border-color:var(--a-main);color:#fff}
+.muscles span.now{background:var(--a-main);border-color:var(--a-main);color:var(--on-main)}
 .bar-track{height:6px;border-radius:3px;background:var(--a-mid);opacity:.5;overflow:hidden;margin:10px 0 0}
 .bar-track i{display:block;height:100%;width:0;background:var(--a-main);border-radius:3px}
 
@@ -301,7 +303,9 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 .saved.on{opacity:1}
 
 /* ---------- панель «накрывает сейчас» ---------- */
-.sos-btn{position:fixed;right:18px;bottom:18px;z-index:45;box-shadow:0 6px 22px rgba(35,40,45,.18)}
+.sos-btn{position:fixed;right:18px;bottom:18px;z-index:45;
+  box-shadow:0 6px 24px rgba(0,0,0,.45), 0 0 0 2px var(--paper)}
+
 .sos{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:18px;
   background:rgba(15,18,22,.55);backdrop-filter:blur(3px)}
 .sos.on{display:flex}
@@ -339,8 +343,10 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   .fields{grid-template-columns:1fr}
   .arow{grid-template-columns:40px 1fr;row-gap:2px}
   .arow .hint{grid-column:2;text-align:left}
-  .nav-in{flex-wrap:wrap;justify-content:center;gap:6px;padding:8px 13px}
-  .nav-brand{width:100%;font-size:9.5px;display:flex;justify-content:space-between;align-items:center}
+  .nav-in{flex-wrap:wrap;justify-content:flex-start;gap:6px;padding:8px 13px}
+  .nav-brand{width:100%;font-size:11px;display:block;padding:4px 2px 6px;margin-bottom:2px;
+    border-bottom:1px solid var(--line);text-decoration:none}
+  .nav-brand span{font-size:12px;margin-top:2px}
   .tab{font-size:11.5px;padding:5px 9px}
   .dial,.breath{width:112px;height:112px;margin:0 auto}
   .breath .orb{width:96px;height:96px}
