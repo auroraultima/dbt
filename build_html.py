@@ -266,10 +266,10 @@ PAGE = r"""<!DOCTYPE html>
 
 def build(sk):
     css = (ASSETS / "app.css").read_text(encoding="utf-8")
-    for k, v in sk["accent"].items():
-        css = css.replace("ACCENT_" + k.upper(), v)
     for k, v in sk["accent_dark"].items():
         css = css.replace("DARK_ACCENT_" + k.upper(), v)
+    for k, v in sk["accent"].items():
+        css = css.replace("ACCENT_" + k.upper(), v)
 
     html = PAGE
     repl = {
@@ -476,10 +476,10 @@ INDEX = r"""<!doctype html>
 
 def build_index():
     css = (ASSETS / "app.css").read_text(encoding="utf-8")
-    for k, v in {"main": "#5A6B75", "deep": "#3E4C55", "mid": "#DCE2E5", "soft": "#EEF2F4", "tint": "#F6F8F9"}.items():
-        css = css.replace("ACCENT_" + k.upper(), v)
     for k, v in {"main": "#8FA1AC", "deep": "#CBD5DC", "mid": "#343D44", "soft": "#262D33", "tint": "#1E2429"}.items():
         css = css.replace("DARK_ACCENT_" + k.upper(), v)
+    for k, v in {"main": "#5A6B75", "deep": "#3E4C55", "mid": "#DCE2E5", "soft": "#EEF2F4", "tint": "#F6F8F9"}.items():
+        css = css.replace("ACCENT_" + k.upper(), v)
 
     html = INDEX
     for a, b in {

@@ -302,8 +302,8 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   display:flex;align-items:center;justify-content:center}
 .sos-step .nm{font-weight:700;font-size:15px}
 .sos-step .ds{font-size:12.5px;color:var(--muted)}
-.sos-close{position:absolute;top:14px;right:16px}
-.sos-wrap{position:relative}
+.sos-close{position:absolute;top:16px;right:16px;z-index:2}
+.sos-wrap{position:relative;width:min(520px,100%)}
 
 /* ---------- служебное ---------- */
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:70;background:#2A3038;

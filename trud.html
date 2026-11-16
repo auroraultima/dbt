@@ -39,7 +39,7 @@
     --bg-glow:#1B2026; --ink:#E6E9ED; --ink-2:#C5CCD4; --muted:#8E97A3;
     --line:#2C323B; --line-dot:#3D4552; --neutral:#232830; --neutral-edge:#3A424E; --neutral-lbl:#96A0AD;
     --ok:#6BA87A; --ok-bg:#1D2E22; --no:#D6795E; --no-bg:#33201B;
-    --a-main:DARK_#2C7A8C; --a-deep:DARK_#1E5765; --a-mid:DARK_#B9D9E0; --a-soft:DARK_#E8F2F4; --a-tint:DARK_#F4FAFB;
+    --a-main:#56ADC0; --a-deep:#A7DCE7; --a-mid:#2E4F58; --a-soft:#1F343A; --a-tint:#1A292E;
     --on-main:#11161A;
     --shadow:0 1px 2px rgba(0,0,0,.25), 0 10px 30px rgba(0,0,0,.3);
   }
@@ -323,8 +323,8 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   display:flex;align-items:center;justify-content:center}
 .sos-step .nm{font-weight:700;font-size:15px}
 .sos-step .ds{font-size:12.5px;color:var(--muted)}
-.sos-close{position:absolute;top:14px;right:16px}
-.sos-wrap{position:relative}
+.sos-close{position:absolute;top:16px;right:16px;z-index:2}
+.sos-wrap{position:relative;width:min(520px,100%)}
 
 /* ---------- служебное ---------- */
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,14px);z-index:70;background:#2A3038;
