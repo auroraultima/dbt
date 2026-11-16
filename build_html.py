@@ -324,8 +324,8 @@ INDEX = r"""<!doctype html>
   .hub-title b{color:#DF8E6B}
 }
 .hub-lead{font-size:16.5px;color:var(--muted);margin:16px 0 0;line-height:1.55}
-.skill-list{display:flex;flex-direction:column;gap:12px;margin:24px 0 0}
-.scard{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:16px;padding:18px 20px;
+.skill-list{display:grid;grid-auto-rows:1fr;gap:12px;margin:24px 0 0}
+.scard{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:16px;padding:18px 20px;height:100%;
   border-radius:16px;background:var(--c-tint);border:1px solid var(--c-mid);
   text-decoration:none;color:inherit;transition:.2s var(--ease)}
 .scard:hover{transform:translateY(-2px);background:var(--c-soft);border-color:var(--c-main);box-shadow:0 8px 22px rgba(27,31,34,.06)}
