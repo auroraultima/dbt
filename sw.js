@@ -1,4 +1,4 @@
-const CACHE = 'dbt-offline';
+const CACHE = 'dbt-offline-v2';
 const FILES = [
   './',
   './index.html',
@@ -14,7 +14,9 @@ const FILES = [
 
 self.addEventListener('install', e => {
   self.skipWaiting();
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(FILES))
+  );
 });
 
 self.addEventListener('activate', e => {
@@ -27,13 +29,31 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // Кэшируем только GET-запросы своего домена
+  if (e.request.method !== 'GET') return;
+
   e.respondWith(
-    fetch(e.request)
-      .then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, copy));
-        return res;
-      })
-      .catch(() => caches.match(e.request))
+    caches.open(CACHE).then(cache => {
+      return cache.match(e.request).then(cachedResponse => {
+        // Фоновый запрос в сеть для обновления кэша
+        const fetchPromise = fetch(e.request)
+          .then(networkResponse => {
+            // Сохраняем в кэш только успешные ответы
+            if (networkResponse && networkResponse.status === 200) {
+              cache.put(e.request, networkResponse.clone());
+            }
+            return networkResponse;
+          })
+          .catch(() => {
+            // Если сети нет вообще и в кэше пусто — отдаём главную как запасной вариант
+            if (e.request.mode === 'navigate') {
+              return cache.match('./index.html');
+            }
+          });
+
+        // Если есть в кэше — отдаём мгновенно, иначе ждём сеть
+        return cachedResponse || fetchPromise;
+      });
+    })
   );
 });
