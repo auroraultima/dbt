@@ -227,12 +227,15 @@ PAGE = r"""<!DOCTYPE html>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" sizes="512x512" href="icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#F7F5F0">
+<meta name="theme-color" content="#F7F5F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16191D" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{{TITLE}} — навык ДБТ · буклет</title>
 <meta name="description" content="{{DESC}}">
-<meta name="color-scheme" content="light">
+
 <style>
 {{FONTS}}
 {{CSS}}
@@ -265,6 +268,9 @@ def build(sk):
     css = (ASSETS / "app.css").read_text(encoding="utf-8")
     for k, v in sk["accent"].items():
         css = css.replace("ACCENT_" + k.upper(), v)
+    for k, v in sk["accent_dark"].items():
+        css = css.replace("DARK_ACCENT_" + k.upper(), v)
+
     html = PAGE
     repl = {
         "{{ON_PC}}": "on" if sk["id"] == "pros_cons" else "",
@@ -300,7 +306,9 @@ INDEX = r"""<!doctype html>
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" sizes="512x512" href="icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#F7F5F0">
+<meta name="theme-color" content="#F7F5F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16191D" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{{SERIES}} — Навыки выживания в кризисе</title>
@@ -310,12 +318,24 @@ INDEX = r"""<!doctype html>
 .hub-title{font-family:'PT Serif',Georgia,serif;font-weight:700;font-size:clamp(32px,5vw,44px);line-height:1.12;margin:12px 0 0;color:var(--a-deep)}
 .hub-title em{font-style:normal;color:#2E7E8B}
 .hub-title b{font-weight:700;color:#B85838}
+@media (prefers-color-scheme: dark){
+  .hub-title em{color:#62B6C8}
+  .hub-title b{color:#DF8E6B}
+}
 .hub-lead{font-size:16.5px;color:var(--muted);margin:16px 0 0;line-height:1.55}
 .skill-list{display:flex;flex-direction:column;gap:12px;margin:24px 0 0}
 .scard{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:16px;padding:18px 20px;
   border-radius:16px;background:var(--c-tint);border:1px solid var(--c-mid);
   text-decoration:none;color:inherit;transition:.2s var(--ease)}
 .scard:hover{transform:translateY(-2px);background:var(--c-soft);border-color:var(--c-main);box-shadow:0 8px 22px rgba(27,31,34,.06)}
+.scard.trud{--c-main:#2E7E8B;--c-deep:#1F5C66;--c-mid:#B8D7DC;--c-soft:#E7F2F4;--c-tint:#F4FAFB}
+.scard.stop{--c-main:#B85838;--c-deep:#8A3E24;--c-mid:#E4C0B2;--c-soft:#F7EAE4;--c-tint:#FCF7F4}
+.scard.pc{--c-main:#4E7C59;--c-deep:#36593F;--c-mid:#C3DAC8;--c-soft:#EBF3ED;--c-tint:#F5F9F6}
+@media (prefers-color-scheme: dark){
+  .scard.trud{--c-main:#56ADC0;--c-deep:#A7DCE7;--c-mid:#2E4F58;--c-soft:#1F343A;--c-tint:#1A292E}
+  .scard.stop{--c-main:#D98662;--c-deep:#F2C0AA;--c-mid:#5A382A;--c-soft:#3A241C;--c-tint:#2C1D17}
+  .scard.pc{--c-main:#76AA83;--c-deep:#B8DBC0;--c-mid:#314B38;--c-soft:#223427;--c-tint:#1C2920}
+}
 .scard .em{width:52px;height:52px;color:var(--c-main);display:flex;align-items:center;justify-content:center}
 .scard .em svg{width:46px;height:46px}
 .scard-body h2{font-family:'PT Serif',Georgia,serif;font-size:24px;margin:0;color:var(--c-deep);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
@@ -341,8 +361,6 @@ INDEX = r"""<!doctype html>
 .guide-body h4:first-child{margin-top:0}
 .guide-body ul{margin:0;padding-left:18px}
 .guide-body li{margin-bottom:5px}
-
-
 </style>
 </head>
 <body>
@@ -367,10 +385,10 @@ INDEX = r"""<!doctype html>
   </div>
 
   <h1 class="hub-title">Три навыка на случай, когда <em>накрывает</em> или когда <b>тянет действовать</b></h1>
-  <p class="hub-lead" style="max-width:none">Буклеты по диалектической поведенческой терапии (ДБТ) Марши Линехан — для тех, кто сталкивается с сильными эмоциями и импульсами. Одинаковый дизайн, светлая палитра, восемь страниц: ситуации, шаги, типичные ошибки и тренировка. Здесь также есть таймеры и карточка на кризис.</p>
+  <p class="hub-lead" style="max-width:none">Буклеты по диалектической поведенческой терапии (ДБТ) Марши Линехан — для тех, кто сталкивается с сильными эмоциями и импульсами. Одинаковый дизайн, восемь страниц: ситуации, шаги, типичные ошибки и тренировка. Здесь также есть таймеры и карточка на кризис.</p>
 
     <div class="skill-list">
-      <a class="scard" href="trud.html" style="--c-main:#2E7E8B;--c-deep:#1F5C66;--c-mid:#B8D7DC;--c-soft:#E7F2F4;--c-tint:#F4FAFB">
+      <a class="scard trud" href="trud.html">
         <div class="em">{{EM_TRUD}}</div>
         <div class="scard-body">
           <h2>ТРУД <span class="lt">навык TIPP</span></h2>
@@ -379,7 +397,7 @@ INDEX = r"""<!doctype html>
         <span class="go">Открыть {{ARROW}}</span>
       </a>
 
-      <a class="scard" href="stop.html" style="--c-main:#B85838;--c-deep:#8A3E24;--c-mid:#E4C0B2;--c-soft:#F7EAE4;--c-tint:#FCF7F4">
+      <a class="scard stop" href="stop.html">
         <div class="em">{{EM_STOP}}</div>
         <div class="scard-body">
           <h2>СТОП <span class="lt">навык STOP</span></h2>
@@ -388,7 +406,7 @@ INDEX = r"""<!doctype html>
         <span class="go">Открыть {{ARROW}}</span>
       </a>
 
-      <a class="scard" href="pros_cons.html" style="--c-main:#4E7C59;--c-deep:#36593F;--c-mid:#C3DAC8;--c-soft:#EBF3ED;--c-tint:#F5F9F6">
+      <a class="scard pc" href="pros_cons.html">
         <div class="em">{{EM_PC}}</div>
         <div class="scard-body">
           <h2>ЗА / ПРОТИВ <span class="lt">навык PROS &amp; CONS</span></h2>
@@ -455,10 +473,14 @@ INDEX = r"""<!doctype html>
 
 
 
+
 def build_index():
     css = (ASSETS / "app.css").read_text(encoding="utf-8")
     for k, v in {"main": "#5A6B75", "deep": "#3E4C55", "mid": "#DCE2E5", "soft": "#EEF2F4", "tint": "#F6F8F9"}.items():
         css = css.replace("ACCENT_" + k.upper(), v)
+    for k, v in {"main": "#8FA1AC", "deep": "#CBD5DC", "mid": "#343D44", "soft": "#262D33", "tint": "#1E2429"}.items():
+        css = css.replace("DARK_ACCENT_" + k.upper(), v)
+
     html = INDEX
     for a, b in {
         "{{FONTS}}": font_css(), "{{CSS}}": css, "{{SERIES}}": SERIES, "{{SERIES_SUB}}": SERIES_SUB,
