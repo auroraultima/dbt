@@ -181,6 +181,7 @@ def sections(sk):
     {fields}
     <div class="ctrls noprint" style="margin-top:4px">
       <button class="btn ghost sm" type="button" id="card-copy"><span>Скопировать карточку</span></button>
+      <button class="btn ghost sm" type="button" id="card-clear"><span>Очистить</span></button>
       <span class="tool-sub" style="margin:0">Записи хранятся только в этом браузере</span>
     </div>
   </div>

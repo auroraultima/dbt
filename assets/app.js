@@ -669,7 +669,28 @@
       });
       copyText(lines.join("\n"));
     });
+    var clear = $("#card-clear");
+    if (clear) {
+      var armed = false, ct;
+      clear.addEventListener("click", function () {
+        var areas = $$(".fill textarea");
+        var hasText = areas.some(function (ta) { return ta.value.trim() !== ""; });
+        if (!hasText) { toast("Карточка уже пуста"); return; }
+        if (!armed) {
+          armed = true;
+          clear.querySelector("span").textContent = "Точно очистить?";
+          ct = setTimeout(function () { armed = false; clear.querySelector("span").textContent = "Очистить"; }, 3500);
+          return;
+        }
+        clearTimeout(ct); armed = false; clear.querySelector("span").textContent = "Очистить";
+        data = {}; store.del(key);
+        areas.forEach(function (ta) { ta.value = ""; });
+        if (saved) saved.classList.remove("on");
+        toast("Карточка очищена");
+      });
+    }
   }
+	
 
   /* ---------- панель «накрывает сейчас» ---------- */
   function initSOS() {
