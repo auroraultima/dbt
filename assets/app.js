@@ -142,9 +142,20 @@
     }
     return null;
   }
+  function trackEvent(code, title) {
+    if (window.goatcounter && typeof window.goatcounter.count === "function") {
+      window.goatcounter.count({ path: code, title: title, event: true });
+    }
+  }
   function addLog(label, v, extra, details) {
     var db = loadDB();
     var prev = lastRating(db);
+    if (typeof v === "number" && typeof prev === "number" && v < prev) {
+      trackEvent("event-relief-" + CFG.skill, "Снижение накала (" + (SKILL_NAMES[CFG.skill] || CFG.skill) + ")");
+    }
+    if (details) {
+      trackEvent("event-saved-" + CFG.skill, "Сохранена практика (" + (SKILL_NAMES[CFG.skill] || CFG.skill) + ")");
+    }
     db.push({
       id: Date.now() + "-" + Math.random().toString(36).slice(2, 6),
       ts: Date.now(),
@@ -317,6 +328,7 @@
       onDone: function () {
         lastTick = 0;
         SND.done();
+		trackEvent("event-timer-" + CFG.skill, "Завершён таймер: " + cfg.sub);
         phase.className = "phase"; phase.textContent = cfg.done;
         start.innerHTML = ICO.play + "<span>Ещё раз</span>";
         if (cfg.onDoneExtra) cfg.onDoneExtra();
@@ -441,7 +453,8 @@
     function stop(done) {
       running = false; cancelAnimationFrame(raf); last = 0;
       start.innerHTML = ICO.play + "<span>" + (done ? "Ещё раз" : "Продолжить") + "</span>";
-      if (done) { phase.className = "phase"; phase.textContent = "Готово. Оцените накал 0–10."; setOrb(.62, .6); toast("Дыхание завершено. Оцените накал."); SND.done();}
+      if (done) { phase.className = "phase"; phase.textContent = "Готово. Оцените накал 0–10."; setOrb(.62, .6); toast("Дыхание завершено. Оцените накал."); SND.done(); trackEvent("event-timer-breath", "Завершено дыхание (шаг Д)");
+}
     }
     function toggleBreath() {
       if (running) { stop(false); return; }
@@ -524,6 +537,7 @@
       dial.set("0", 0); start.innerHTML = ICO.play + "<span>Ещё раз</span>";
       toast("Релаксация завершена. Оцените накал.");
 	  SND.done();
+	  trackEvent("event-timer-relax", "Завершена релаксация (шаг Р)");
     }
     function loop(ts) {
       if (!running) return;

@@ -297,6 +297,8 @@ PAGE = r"""<!DOCTYPE html>
 {{JS}}
 </script>
 <script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
+<script data-goatcounter="https://drwg.goatcounter.com/count" async src="https://zgo.at"></script>
+</body>
 </body>
 </html>
 """
@@ -535,7 +537,9 @@ INDEX = r"""<!doctype html>
     </div>
   </section>
 </div>
-<script>document.getElementById("print-btn").addEventListener("click",function(){window.print();});</script>
+<script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
+<script data-goatcounter="https://drwg.goatcounter.com/count" async src="https://zgo.at"></script>
+</body>
 <script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
 </body>
 </html>
@@ -656,6 +660,8 @@ DIARY = r"""<!doctype html>
 {{JS}}
 </script>
 <script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
+<script data-goatcounter="https://drwg.goatcounter.com/count" async src="https://zgo.at"></script>
+</body>
 </body>
 </html>
 """
