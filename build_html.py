@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Сборка экранных HTML-буклетов: self-contained (шрифты, стили, скрипты внутри файла)."""
-import base64, pathlib
+import base64, hashlib, pathlib, re
 from content import SKILLS, SHARED, SERIES, SERIES_SUB
 
 HERE = pathlib.Path(__file__).parent
@@ -682,6 +682,24 @@ def build_diary():
     return out, len(html)
 
 
+def bump_sw():
+    sw_path = HERE / "sw.js"
+    if not sw_path.exists():
+        return
+    h = hashlib.md5()
+    for fn in ("index.html", "diary.html", "trud.html", "stop.html", "pros_cons.html", "problem_solving.html",
+               "trud.pdf", "stop.pdf", "pros_cons.pdf", "problem_solving.pdf", "manifest.json", "icon.png", "favicon.png"):
+        fp = HERE / fn
+        if fp.exists():
+            h.update(fp.read_bytes())
+    ver = "dbt-offline-" + h.hexdigest()[:8]
+    txt = sw_path.read_text(encoding="utf-8")
+    new_txt = re.sub(r"const CACHE = '[^']+';", f"const CACHE = '{ver}';", txt, count=1)
+    if new_txt != txt:
+        sw_path.write_text(new_txt, encoding="utf-8")
+        print("updated sw.js ->", ver)
+
+
 if __name__ == "__main__":
     for sid in ("trud", "stop", "pros_cons", "problem_solving"):
         p, n = build(SKILLS[sid])
@@ -690,4 +708,4 @@ if __name__ == "__main__":
     print("built", p.name, round(n / 1024), "KB")
     p, n = build_diary()
     print("built", p.name, round(n / 1024), "KB")
-
+    bump_sw()
