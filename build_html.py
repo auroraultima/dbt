@@ -295,7 +295,7 @@ PAGE = r"""<!DOCTYPE html>
 <script>
 {{JS}}
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}</script>
+<script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
 </body>
 </html>
 """
@@ -535,7 +535,7 @@ INDEX = r"""<!doctype html>
   </section>
 </div>
 <script>document.getElementById("print-btn").addEventListener("click",function(){window.print();});</script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}</script>
+<script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
 </body>
 </html>
 """
@@ -633,7 +633,16 @@ DIARY = r"""<!doctype html>
       <button type="button" class="db-chip" data-skill="problem_solving">РЕШЕНИЕ ПРОБЛЕМЫ</button>
     </div>
 
+        <div class="db-sel-bar noprint" id="db-sel-bar">
+      <span class="db-sel-cnt" id="db-sel-cnt">Выбрано: 0</span>
+      <button class="btn sm" type="button" id="db-sel-copy"><span>Скопировать выбранные</span></button>
+      <button class="btn ghost sm" type="button" id="db-sel-txt">{{ICO_DOWN}}<span>Скачать (.txt)</span></button>
+      <button class="btn ghost sm" type="button" id="db-sel-all"><span>Выбрать все</span></button>
+      <button class="btn ghost sm" type="button" id="db-sel-none"><span>Снять</span></button>
+    </div>
+
     <div id="db-list"></div>
+
 
     <div class="safety" style="margin-top:20px">
       <b>Приватность.</b> Все записи хранятся исключительно в локальной памяти вашего браузера и никуда не отправляются. Рекомендуем периодически скачивать резервную копию (<b>.json</b>).
@@ -645,7 +654,7 @@ DIARY = r"""<!doctype html>
 <script>
 {{JS}}
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}</script>
+<script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
 </body>
 </html>
 """

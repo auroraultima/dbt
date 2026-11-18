@@ -358,6 +358,14 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 .db-del:hover{color:var(--no)}
 .db-details{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--ink-2);
   white-space:pre-line;line-height:1.48}
+.db-chk{accent-color:var(--a-main);width:16px;height:16px;cursor:pointer;flex:none}
+.db-item.sel{border-color:var(--a-main);background:var(--a-tint)}
+.db-copy-one{background:none;border:0;color:var(--muted);cursor:pointer;font-size:12.5px;font-weight:700;padding:2px 6px;border-radius:6px}
+.db-copy-one:hover{color:var(--a-deep);background:var(--a-soft)}
+.db-sel-bar{display:none;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;margin:0 0 14px;
+  border-radius:13px;background:var(--a-soft);border:1px solid var(--a-mid)}
+.db-sel-bar.on{display:flex}
+.db-sel-cnt{font-size:13px;font-weight:700;color:var(--a-deep);margin-right:auto}
 @media (max-width:560px){.db-stats{grid-template-columns:1fr}}
 
 /* ---------- панель «накрывает сейчас» ---------- */
@@ -663,6 +671,64 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastEl.classList.remove("on"); }, 2600);
   }
 
+  /* ---------- звуковой движок (Web Audio API, без внешних файлов) ---------- */
+  var SND = (function () {
+    var ctx = null;
+    var enabled = store.get("dbt-sound", true);
+    function getCtx() {
+      if (!enabled) return null;
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      if (!ctx) ctx = new AC();
+      if (ctx.state === "suspended") ctx.resume().catch(function () {});
+      return ctx;
+    }
+    function tone(freq, dur, vol, delay) {
+      var c = getCtx(); if (!c) return;
+      var t0 = c.currentTime + (delay || 0);
+      var osc = c.createOscillator();
+      var gain = c.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol || 0.14, t0 + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    }
+    return {
+      isOn: function () { return enabled; },
+      toggle: function () {
+        enabled = !enabled;
+        store.set("dbt-sound", enabled);
+        if (enabled) tone(528, 0.35, 0.1);
+        return enabled;
+      },
+      unlock: function () { getCtx(); },
+      start: function () { tone(440, 0.3, 0.1); },
+      tick: function () { tone(392, 0.18, 0.07); },
+      inhale: function () { tone(396, 0.55, 0.11); },
+      exhale: function () { tone(528, 0.75, 0.11); },
+      done: function () { tone(528, 0.7, 0.15, 0); tone(660, 0.95, 0.14, 0.22); }
+    };
+  })();
+
+  function soundToggleBtn() {
+    var b = document.createElement("button");
+    b.type = "button";
+    b.className = "btn ghost sm";
+    b.style.marginLeft = "auto";
+    function paint() {
+      b.innerHTML = "<span>" + (SND.isOn() ? "Звук: вкл" : "Звук: выкл") + "</span>";
+      b.style.opacity = SND.isOn() ? "1" : "0.65";
+    }
+    b.addEventListener("click", function () { SND.toggle(); paint(); });
+    paint();
+    return b;
+  }
+
   /* ---------- иконки ---------- */
   var ICO = {
     play: '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.6v10.8c0 .5.6.8 1 .5l8.2-5.4c.4-.3.4-.8 0-1L5 2.1c-.4-.3-1 0-1 .5z"/></svg>',
@@ -767,6 +833,22 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     return lines.join("\n");
   }
 
+  function copyText(txt) {
+    if (!txt) { toast("Пока нечего копировать"); return; }
+    var done = function () { toast("Скопировано — можно отправить терапевту"); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(done, function () { fallbackCopy(txt, done); });
+    } else fallbackCopy(txt, done);
+  }
+  function fallbackCopy(txt, done) {
+    var ta = document.createElement("textarea");
+    ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(ta);
+    if (ok) done(); else { window.prompt("Скопируйте текст вручную:", txt); }
+  }
+
   /* ---------- строка оценки накала ---------- */
   function rateRow(label, onsave) {
     var wrap = document.createElement("div"); wrap.className = "rate";
@@ -846,6 +928,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     host.innerHTML =
       '<div class="tool-head"><span class="tool-title">' + cfg.title + '</span><span class="tool-sub">' + cfg.sub + "</span></div>" +
       '<div class="tool-body"></div>';
+    $(".tool-head", host).appendChild(soundToggleBtn());
     var body = $(".tool-body", host);
     var dial = makeDial(cfg.unit || "сек");
     var side = document.createElement("div"); side.className = "tool-side";
@@ -863,17 +946,28 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     if (cfg.extraCtrls) cfg.extraCtrls(ctrls);
 
     function paintIdle() { phase.className = "phase q"; phase.textContent = cfg.idle; dial.set(cfg.fmt(cd.total), 1); }
+    var lastTick = 0;
     var cd = new Countdown({
       seconds: cfg.seconds,
-      onTick: function (r, t) { dial.set(cfg.fmt(r), r / t); if (cfg.onTick) cfg.onTick(r, t, phase); },
+      onTick: function (r, t) {
+        dial.set(cfg.fmt(r), r / t);
+        var ceilR = Math.ceil(r);
+        if (cfg.countdownBeep && ceilR <= 3 && ceilR >= 1 && ceilR !== lastTick) {
+          lastTick = ceilR;
+          SND.tick();
+        }
+        if (cfg.onTick) cfg.onTick(r, t, phase);
+      },
       onDone: function () {
+        lastTick = 0;
+        SND.done();
         phase.className = "phase"; phase.textContent = cfg.done;
         start.innerHTML = ICO.play + "<span>Ещё раз</span>";
         if (cfg.onDoneExtra) cfg.onDoneExtra();
         toast(cfg.toast || "Готово. Оцените накал 0–10.");
       },
       onState: function (s) {
-        if (s === "run") { phase.className = "phase"; phase.textContent = cfg.run; start.innerHTML = ICO.pause + "<span>Пауза</span>"; }
+        if (s === "run") { lastTick = 0; SND.start(); phase.className = "phase"; phase.textContent = cfg.run; start.innerHTML = ICO.pause + "<span>Пауза</span>"; }
         if (s === "pause") { start.innerHTML = ICO.play + "<span>Продолжить</span>"; }
         if (s === "idle") { start.innerHTML = ICO.play + "<span>Старт</span>"; }
       }
@@ -888,7 +982,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   /* ---------- Т: таймер холода ---------- */
   function toolCold(host) {
     timerTool(host, {
-      title: "Практика · холод на лицо", sub: "шаг Т", unit: "сек",
+      title: "Практика · холод на лицо", sub: "шаг Т", unit: "сек", countdownBeep: true,
       seconds: 30, min: 10, max: 30, step: 5, fmt: function (v) { return Math.ceil(v); },
       idle: "Приготовьте воду, задержите дыхание — и старт.",
       run: "Держите лицо в воде. Дыхание задержано.",
@@ -928,6 +1022,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     host.innerHTML =
       '<div class="tool-head"><span class="tool-title">Практика · дыхательный ритм</span><span class="tool-sub">шаг Д</span></div>' +
       '<div class="tool-body"></div>';
+	$(".tool-head", host).appendChild(soundToggleBtn());
     var body = $(".tool-body", host);
     var breath = document.createElement("div"); breath.className = "breath";
     breath.innerHTML = '<span class="ring"></span><span class="orb"></span><span class="cnt">5</span>';
@@ -965,8 +1060,8 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     function paintMeta() { meta.textContent = "Циклов: " + cycles + " · осталось " + mmss(Math.max(0, limit - elapsed)); }
     function enter(name) {
       phaseName = name;
-      if (name === "in") { phaseLeft = inhale; phase.className = "phase"; phase.textContent = "Вдох… живот поднимается"; setOrb(1, inhale); }
-      else { phaseLeft = exhale; phase.className = "phase"; phase.textContent = "Выдох… отпустите плечи"; setOrb(0.62, exhale); }
+      if (name === "in") { phaseLeft = inhale; phase.className = "phase"; phase.textContent = "Вдох… живот поднимается"; setOrb(1, inhale); SND.inhale(); }
+      else { phaseLeft = exhale; phase.className = "phase"; phase.textContent = "Выдох… отпустите плечи"; setOrb(0.62, exhale); SND.exhale(); }
     }
     function loop(ts) {
       if (!running) return;
@@ -982,7 +1077,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     function stop(done) {
       running = false; cancelAnimationFrame(raf); last = 0;
       start.innerHTML = ICO.play + "<span>" + (done ? "Ещё раз" : "Продолжить") + "</span>";
-      if (done) { phase.className = "phase"; phase.textContent = "Готово. Оцените накал 0–10."; setOrb(.62, .6); toast("Дыхание завершено. Оцените накал."); }
+      if (done) { phase.className = "phase"; phase.textContent = "Готово. Оцените накал 0–10."; setOrb(.62, .6); toast("Дыхание завершено. Оцените накал."); SND.done();}
     }
     start.addEventListener("click", function () {
       if (running) { stop(false); return; }
@@ -1005,6 +1100,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     host.innerHTML =
       '<div class="tool-head"><span class="tool-title">Практика · напряжение и отпускание</span><span class="tool-sub">шаг Р</span></div>' +
       '<div class="tool-body"></div>';
+	$(".tool-head", host).appendChild(soundToggleBtn());
     var body = $(".tool-body", host);
     var dial = makeDial("сек");
     var side = document.createElement("div"); side.className = "tool-side";
@@ -1040,6 +1136,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       phase.textContent = m === "tense"
         ? "Вдох · напрягите: " + GROUPS[idx].toLowerCase()
         : "Выдох · «Расслабься» · отпустите";
+      if (m === "tense") SND.inhale(); else SND.exhale();
       paint();
     }
     function next() {
@@ -1054,6 +1151,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       phase.className = "phase"; phase.textContent = "Всё тело пройдено. Заметьте разницу и оцените накал.";
       dial.set("0", 0); start.innerHTML = ICO.play + "<span>Ещё раз</span>";
       toast("Релаксация завершена. Оцените накал.");
+	  SND.done();
     }
     function loop(ts) {
       if (!running) return;
@@ -1087,7 +1185,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       title: "Практика · замрите", sub: "шаг С", unit: "сек",
       seconds: 10, min: 3, max: 20, step: 1, fmt: function (v) { return Math.ceil(v); },
       idle: "Нажмите «Старт» — и не двигайтесь.",
-      run: "Не двигайте ни одной мышкой. Ничего не отправляйте.",
+      run: "Не двигайте ни одной мышцей. Ничего не отправляйте.",
       done: "Пауза состоялась. Переходите к шагу Т — шаг назад.",
       hint: "Руки от телефона, от двери, от предмета. Ни слова: ни последнего слова, ни оправдания.",
       logLabel: "СТОП · С (стоп)", toast: "Стоп отработано. Шаг Т — отойдите."
@@ -1096,7 +1194,6 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 
   /* ---------- Т: пауза ---------- */
   function toolPause(host) {
-    var minutes = 3;
     var t = timerTool(host, {
       title: "Практика · пауза", sub: "шаг Т", unit: "мин:сек",
       seconds: 180, min: 60, max: 300, step: 60, fmt: mmss,
@@ -1113,8 +1210,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     copy.addEventListener("click", function () { copyText("Мне нужно " + Math.round(t.cd.total / 60) + " минут, я вернусь к разговору."); });
     row.appendChild(copy); host.insertBefore(row, $(".rate", host)); host.insertBefore(phrase, $(".rate", host));
     paintPhrase();
-    var mo = new MutationObserver(paintPhrase);
-    mo.observe(host, { subtree: true, childList: true, characterData: true });
+    $$(".stepper button", host).forEach(function (b) { b.addEventListener("click", paintPhrase); });
   }
 
   /* ---------- О: осмотрись ---------- */
@@ -1662,7 +1758,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   /* ---------- страница «Дневник» (браузер БД) ---------- */
   function initDiary() {
     var host = $("#diary-app"); if (!host) return;
-    var state = { q: "", date: "", skill: "all" };
+    var state = { q: "", date: "", skill: "all", selected: {} };
 
     function escH(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
     function ymd(ts) {
@@ -1673,7 +1769,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       var today = ymd(Date.now());
       var yest = ymd(Date.now() - 86400000);
       var p = ymdStr.split("-");
-      var months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", " ноября", "декабря"];
+      var months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
       var label = parseInt(p[2], 10) + " " + months[parseInt(p[1], 10) - 1].trim() + " " + p[0];
       if (ymdStr === today) return "Сегодня · " + label;
       if (ymdStr === yest) return "Вчера · " + label;
@@ -1688,7 +1784,32 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       document.body.removeChild(a);
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     }
-
+    function cleanTitle(e) {
+      var lbl = String(e.label || "");
+      var sk = String(e.skillName || "");
+      if (sk && lbl.toUpperCase().indexOf(sk.toUpperCase()) === 0) return lbl;
+      return sk + " · " + lbl;
+    }
+    function formatItemsText(items, headerTitle) {
+      var lines = [headerTitle || ("ДБТ · ДНЕВНИК ПРАКТИКИ (" + ymd(Date.now()) + ")"), "========================================", ""];
+      var curDay = "";
+      items.slice().sort(function (a, b) { return a.ts - b.ts; }).forEach(function (e) {
+        var day = ymd(e.ts);
+        if (day !== curDay) { curDay = day; lines.push("=== " + dayTitle(day).toUpperCase() + " ==="); }
+        var d = new Date(e.ts);
+        var r = typeof e.v === "number" ? " | накал: " + (typeof e.prev === "number" ? e.prev + " -> " : "") + e.v : "";
+        lines.push("[" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + "] " + cleanTitle(e) + (e.extra ? " (" + e.extra + ")" : "") + r);
+        if (e.details) lines.push(e.details);
+        lines.push("");
+      });
+      return lines.join("\n").trim();
+    }
+    function formatSingleText(e) {
+      var d = new Date(e.ts);
+      var r = typeof e.v === "number" ? " | накал: " + (typeof e.prev === "number" ? e.prev + " → " : "") + e.v : "";
+      var head = dayTitle(ymd(e.ts)) + ", " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + " · " + cleanTitle(e) + (e.extra ? " (" + e.extra + ")" : "") + r;
+      return e.details ? head + "\n" + e.details : head;
+    }
     function filtered() {
       var db = loadDB().slice().sort(function (a, b) { return b.ts - a.ts; });
       var q = state.q.trim().toLowerCase();
@@ -1702,7 +1823,17 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
         return true;
       });
     }
-
+    function getSelectedItems() {
+      var db = loadDB().slice().sort(function (a, b) { return b.ts - a.ts; });
+      return db.filter(function (e) { return !!state.selected[e.id]; });
+    }
+    function updateSelBar() {
+      var bar = $("#db-sel-bar"), cnt = $("#db-sel-cnt");
+      if (!bar || !cnt) return;
+      var sel = getSelectedItems();
+      bar.classList.toggle("on", sel.length > 0);
+      cnt.textContent = "Выбрано записей: " + sel.length;
+    }
     function renderStats() {
       var db = loadDB();
       var totalEl = $("#db-stat-total"), weekEl = $("#db-stat-week"), dropEl = $("#db-stat-drop");
@@ -1714,19 +1845,19 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       if (deltas.length) {
         var avg = deltas.reduce(function (s, e) { return s + (e.prev - e.v); }, 0) / deltas.length;
         dropEl.textContent = (avg >= 0 ? "−" : "+") + Math.abs(avg).toFixed(1) + " б.";
-      } else {
-        dropEl.textContent = "—";
-      }
+      } else { dropEl.textContent = "—"; }
     }
-
     function render() {
       renderStats();
+      updateSelBar();
       var listEl = $("#db-list");
       var items = filtered();
       if (!items.length) {
         listEl.innerHTML = '<p class="log-empty" style="padding:16px 0">Записей по выбранным фильтрам не найдено.</p>';
         return;
       }
+      var byId = {};
+      items.forEach(function (e) { byId[e.id] = e; });
       var groups = [], map = {};
       items.forEach(function (e) {
         var key = ymd(e.ts);
@@ -1734,33 +1865,46 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
         map[key].push(e);
       });
       listEl.innerHTML = groups.map(function (g) {
-        var cards = g.list.map(function (e) {
+        var cards = g.list.slice().reverse().map(function (e) {
           var d = new Date(e.ts);
           var tm = pad(d.getHours()) + ":" + pad(d.getMinutes());
-          var rate = "";
-          if (typeof e.v === "number") {
-            rate = '<span class="db-rate">накал: ' + (typeof e.prev === "number" ? e.prev + " → " : "") + e.v + '</span>';
-          }
+          var isSel = !!state.selected[e.id];
+          var rate = typeof e.v === "number" ? '<span class="db-rate">накал: ' + (typeof e.prev === "number" ? e.prev + " → " : "") + e.v + '</span>' : "";
           var det = e.details ? '<div class="db-details">' + escH(e.details) + '</div>' : "";
-          return '<div class="db-item" data-id="' + escH(e.id) + '">' +
+          return '<div class="db-item' + (isSel ? ' sel' : '') + '" data-id="' + escH(e.id) + '">' +
             '<div class="db-item-top">' +
+            '<input type="checkbox" class="db-chk" aria-label="Выбрать запись"' + (isSel ? ' checked' : '') + '>' +
             '<span class="db-tag ' + escH(e.skill) + '">' + escH(e.skillName) + '</span>' +
             '<span class="db-time">' + tm + '</span>' +
             '<span class="db-title">' + escH(e.label) + (e.extra ? " · " + escH(e.extra) : "") + '</span>' +
             rate +
+            '<button type="button" class="db-copy-one" title="Скопировать запись">Копировать</button>' +
             '<button type="button" class="db-del" title="Удалить запись">×</button>' +
             '</div>' + det + '</div>';
         }).join("");
         return '<div class="db-day"><div class="db-day-head"><span>' + dayTitle(g.key) + '</span><span>' + g.list.length + ' зап.</span></div>' + cards + '</div>';
       }).join("");
-
+      $$(".db-chk", listEl).forEach(function (cb) {
+        cb.addEventListener("change", function () {
+          var card = cb.closest(".db-item"), id = card && card.dataset.id;
+          if (!id) return;
+          if (cb.checked) state.selected[id] = true; else delete state.selected[id];
+          card.classList.toggle("sel", cb.checked);
+          updateSelBar();
+        });
+      });
+      $$(".db-copy-one", listEl).forEach(function (b) {
+        b.addEventListener("click", function () {
+          var card = b.closest(".db-item"), item = card && byId[card.dataset.id];
+          if (item) copyText(formatSingleText(item));
+        });
+      });
       $$(".db-del", listEl).forEach(function (b) {
         b.addEventListener("click", function () {
-          var card = b.closest(".db-item");
-          var id = card && card.dataset.id;
+          var card = b.closest(".db-item"), id = card && card.dataset.id;
           if (!id) return;
-          var db = loadDB().filter(function (x) { return x.id !== id; });
-          saveDB(db);
+          delete state.selected[id];
+          saveDB(loadDB().filter(function (x) { return x.id !== id; }));
           render();
           toast("Запись удалена");
         });
@@ -1848,8 +1992,31 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       });
     }
 
+    var selCopy = $("#db-sel-copy"), selTxt = $("#db-sel-txt"), selAll = $("#db-sel-all"), selNone = $("#db-sel-none");
+    if (selCopy) selCopy.addEventListener("click", function () {
+      var sel = getSelectedItems();
+      if (!sel.length) return;
+      copyText(sel.length === 1 ? formatSingleText(sel[0]) : formatItemsText(sel, "ДБТ · ВЫБРАННЫЕ ЗАПИСИ (" + sel.length + ")"));
+    });
+    if (selTxt) selTxt.addEventListener("click", function () {
+      var sel = getSelectedItems();
+      if (!sel.length) return;
+      downloadFile("dbt-selected-" + ymd(Date.now()) + ".txt", formatItemsText(sel, "ДБТ · ВЫБРАННЫЕ ЗАПИСИ (" + sel.length + ")"), "text/plain;charset=utf-8");
+      toast("Выбранные записи скачаны (.txt)");
+    });
+    if (selAll) selAll.addEventListener("click", function () {
+      filtered().forEach(function (e) { state.selected[e.id] = true; });
+      render();
+    });
+    if (selNone) selNone.addEventListener("click", function () {
+      state.selected = {};
+      render();
+    });
+
     render();
   }
+
+  /* ---------- запуск ---------- */
 
   /* ---------- запуск ---------- */
   function init() {
@@ -1877,6 +2044,6 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 })();
 
 </script>
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}</script>
+<script>if('serviceWorker' in navigator && /^https?:/.test(location.protocol)){navigator.serviceWorker.register('./sw.js');}</script>
 </body>
 </html>
