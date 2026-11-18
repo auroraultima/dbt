@@ -72,13 +72,15 @@ class Book:
 
     def footer(self):
         c = self.c
+        total = len(self.sk["steps"]) + 4
+        sub = self.sk.get("series_sub", SERIES_SUB)
         c.setStrokeColor(LINE)
         c.setLineWidth(0.5)
         c.line(ML, MB + 9, PW - MR, MB + 9)
         c.setFont("PTSans", 6.8)
         c.setFillColor(MUTED)
-        c.drawString(ML, MB, "%s · %s" % (self.sk["acronym"], SERIES_SUB))
-        c.drawRightString(PW - MR, MB, "%d / 8" % self.page)
+        c.drawString(ML, MB, "%s · %s" % (self.sk["acronym"], sub))
+        c.drawRightString(PW - MR, MB, "%d / %d" % (self.page, total))
 
     def check(self, need, tag):
         if self.y - need < BOTTOM:
@@ -288,7 +290,16 @@ class Book:
             c.line(52, 42, 46, 28)
             c.line(52, 42, 58, 28)
             c.line(46, 28, 58, 28)
-
+        elif self.sk["id"] == "problem_solving":
+            c.circle(32, 32, 22, stroke=1, fill=0)
+            p = c.beginPath()
+            p.moveTo(41, 41)
+            p.lineTo(36, 28)
+            p.lineTo(23, 23)
+            p.lineTo(28, 36)
+            p.close()
+            c.drawPath(p, stroke=1, fill=0)
+            c.circle(32, 32, 2.2, stroke=0, fill=1)
         else:
             p = c.beginPath()
             pts = [(22, 58), (42, 58), (58, 42), (58, 22), (42, 6), (22, 6), (6, 22), (6, 42)]
@@ -306,10 +317,11 @@ class Book:
     # ------------------------------------------------------------ страницы
     def cover(self):
         sk = self.sk
+        total_pages = len(sk["steps"]) + 4
         self.new_page()
         c = self.c
-        self.label(SERIES, self.main, size=7.6, gap=3)
-        self.label(SERIES_SUB, MUTED, size=7.6, gap=0)
+        self.label(sk.get("series", SERIES), self.main, size=7.6, gap=3)
+        self.label(sk.get("series_sub", SERIES_SUB), MUTED, size=7.6, gap=0)
         self.emblem(PW - MR - 44, TOP + 2, 44)
         self.y -= 22
         self.flow(xesc(sk["title"]), self.style(46, 46, "PTSerif-Bold", self.deep), gap=6)
@@ -317,42 +329,55 @@ class Book:
         self.flow(xesc(sk["tagline"]), self.style(13, 16.5, "PTSerif"), gap=5)
         self.flow(xesc(sk["cover_note"]), self.style(9.5, 12.6, "PTSans-Italic", MUTED), gap=14)
 
-        # таблица расшифровки
+        # таблица расшифровки (компактный режим, если пунктов > 4)
+        compact = len(sk["letters"]) > 4
+        rowh = 22 if compact else 40
+        bsize = 17 if compact else 28
+        bfs = 10.5 if compact else 15.5
+        nfs = 9.8 if compact else 11.5
+        hfs = 8.2 if compact else 9.0
+
         c.setStrokeColor(LINE)
         c.setLineWidth(0.6)
         c.line(ML, self.y, PW - MR, self.y)
-        self.y -= 0
         for letter, name, hint in sk["letters"]:
-            rowh = 40
             self.check(rowh, "акроним")
-            self.badge(letter, 28, ML, self.y - 6, 15.5)
+            self.badge(letter, bsize, ML, self.y - (rowh - bsize) / 2, bfs)
+            ty = self.y - rowh / 2 - nfs * 0.34
             c.setFillColor(INK)
-            c.setFont("PTSans-Bold", 11.5)
-            c.drawString(ML + 40, self.y - 22, name)
+            c.setFont("PTSans-Bold", nfs)
+            c.drawString(ML + bsize + 10, ty, name)
             c.setFillColor(MUTED)
-            c.setFont("PTSans", 9)
-            c.drawRightString(PW - MR, self.y - 22, hint)
+            c.setFont("PTSans", hfs)
+            c.drawRightString(PW - MR, ty, hint)
             self.y -= rowh
             c.setStrokeColor(LINE)
             c.line(ML, self.y, PW - MR, self.y)
-        self.y -= 14
-        self.flow(xesc(sk["lead"]), self.style(10.5, 14.6, color=HexColor("#3A4249")), gap=12)
-        self.box("Как открывать буклет", sk["cover_callout"], kind="tip", gap=10)
-        self.flow("Карманная памятка для клиента · 8 страниц · по навыкам М. Линехан",
+        self.y -= 9 if compact else 14
+        self.flow(xesc(sk["lead"]),
+                  self.style(9.4 if compact else 10.5, 12.8 if compact else 14.6, color=HexColor("#3A4249")),
+                  gap=8 if compact else 12)
+        self.box("Как открывать буклет", sk["cover_callout"], kind="tip", gap=7 if compact else 10)
+        self.flow("Карманная памятка для клиента · %d страниц · по навыкам М. Линехан" % total_pages,
                   self.style(8, 11, color=MUTED), gap=0)
 
     def when(self):
         self.new_page()
         self.label("01 · Когда применять", self.main, size=7.5, gap=8, rule=True)
-        self.h2("Сначала проверьте: это кризис?", gap=10)
-        for key in ("crisis", "use_when"):
-            self.label(SHARED[key]["title"], size=8, gap=5)
-            self.dash_list(SHARED[key]["items"], gap=10)
+        self.h2(self.sk.get("when_h2", "Сначала проверьте: это кризис?"), gap=10)
+        if self.sk["id"] == "problem_solving":
+            for b in self.sk["when_blocks"]:
+                self.label(b["title"], size=8, gap=5)
+                self.dash_list(b["items"], gap=10)
+            goal = self.sk["goal_text"]
+        else:
+            for key in ("crisis", "use_when"):
+                self.label(SHARED[key]["title"], size=8, gap=5)
+                self.dash_list(SHARED[key]["items"], gap=10)
+            goal = "Пережить кризис, не сделав хуже. Не решить проблему и не стать спокойным навсегда — только не ухудшить."
         self.label(self.sk["situations"]["title"], size=8, gap=5)
         self.dash_list(self.sk["situations"]["items"], gap=8)
-        self.box("Цель навыка",
-                 "Пережить кризис, не сделав хуже. Не решить проблему и не стать спокойным навсегда — только не ухудшить.",
-                 kind="tip", gap=0)
+        self.box("Цель навыка", goal, kind="tip", gap=0)
 
     def limits(self):
         sk = self.sk
@@ -426,7 +451,8 @@ class Book:
 
     def step(self, i, st):
         self.new_page()
-        self.label("0%d · Шаг %d из 4" % (i + 2, i), self.main, size=7.5, gap=10, rule=True)
+        steps_total = len(self.sk["steps"])
+        self.label("%02d · Шаг %d из %d" % (i + 2, i, steps_total), self.main, size=7.5, gap=10, rule=True)
         head_h = 42
         self.check(head_h, "заголовок шага")
         self.badge(st["letter"], 40, ML, self.y, 22)
@@ -463,8 +489,9 @@ class Book:
 
     def practice(self):
         sk = self.sk
+        last_sec = len(sk["steps"]) + 3
         self.new_page()
-        self.label("07 · Тренировка и карточка", self.main, size=7.5, gap=8, rule=True)
+        self.label("%02d · Тренировка и карточка" % last_sec, self.main, size=7.5, gap=8, rule=True)
         self.h2("Навык появляется до кризиса, а не в нём", gap=8)
         self.label(SHARED["practice"]["title"], size=8, gap=5)
         self.dash_list(SHARED["practice"]["items"], gap=3, leading=13.0)
@@ -481,9 +508,9 @@ class Book:
             self.c.setStrokeColor(DOT)
             self.c.setLineWidth(0.6)
             self.c.setDash(1, 2)
-        for _ in range(2):
-            self.c.line(ML, self.y, PW - MR, self.y)
-            self.y -= 10
+            for _ in range(2):
+                self.c.line(ML, self.y, PW - MR, self.y)
+                self.y -= 10
             self.c.setDash()
             self.y -= 2.5
         self.y -= 4
@@ -513,7 +540,8 @@ class Book:
 
 
 if __name__ == "__main__":
-    for sid in ("trud", "stop", "pros_cons"):
+    for sid in ("trud", "stop", "pros_cons", "problem_solving"):
         b = Book(SKILLS[sid], HERE / (sid + ".pdf"))
         w = b.build()
         print(sid + ".pdf:", b.page, "страниц", "| предупреждения:", w if w else "нет")
+

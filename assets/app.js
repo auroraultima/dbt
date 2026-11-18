@@ -617,10 +617,179 @@
     }));
   }
 
+  /* ---------- РЕШЕНИЕ ПРОБЛЕМЫ: 7 отдельных шагов (М. Линехан) ---------- */
+  function getPSData() {
+    return store.get("dbt-ps-data", {
+      event: "", facts: "", goal: "", ideas: [], step: "", planB: "", result: ""
+    });
+  }
+  function setPSData(d) { store.set("dbt-ps-data", d); }
+
+  function toolPS1(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Практика · описание события</span><span class="tool-sub">шаг 1 из 7</span></div>' +
+      '<div class="field"><label for="ps-event">Что произошло? (как видеокамера, без оценок и ярлыков)</label>' +
+      '<textarea id="ps-event" rows="3" placeholder="Например: Коллега не прислал свою часть отчёта к 15:00, как мы договаривались вчера..."></textarea></div>';
+    var ev = $("#ps-event", host);
+    ev.value = d.event || "";
+    ev.addEventListener("input", function () { var cur = getPSData(); cur.event = ev.value; setPSData(cur); });
+  }
+
+  function toolPS2(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Практика · проверка фактов</span><span class="tool-sub">шаг 2 из 7</span></div>' +
+      '<div class="field"><label for="ps-facts">Проверенные факты (отдельно от домыслов и тревожных мыслей)</label>' +
+      '<textarea id="ps-facts" rows="3" placeholder="Факт: письма нет. Мысль: «он меня подставляет». Эмоция оправдана фактами..."></textarea></div>' +
+      '<div class="tool-hint" style="margin:12px 0 6px">Отметьте все пункты, которые выполняются:</div>' +
+      '<div class="ps-checks">' +
+      '<label class="ps-chk"><input type="checkbox"> Факты подтвердились (если нет — вернитесь к Шагу 1)</label>' +
+      '<label class="ps-chk"><input type="checkbox"> Моя эмоция оправдана реальными фактами</label>' +
+      '<label class="ps-chk"><input type="checkbox"> Ситуацию можно изменить моими действиями</label>' +
+      '</div>' +
+      '<div class="ps-warn on" id="ps-warn">Пока отмечены не все пункты: если факты неверны — перепишите Шаг 1. Если эмоция не оправдана или ситуацию нельзя изменить — этот буклет не подойдёт: обсудите с терапевтом навыки принятия или противоположного действия, а пережить накал здесь помогут СТОП и ТРУД.</div>' +
+      '<div class="tool-hint" id="ps-ok" style="display:none;color:var(--a-deep);font-weight:700;margin-top:10px">Все условия выполнены — можно переходить к Шагу 3 и формулировать цель.</div>';
+    var fa = $("#ps-facts", host), warn = $("#ps-warn", host), okMsg = $("#ps-ok", host);
+    fa.value = d.facts || "";
+    fa.addEventListener("input", function () { var cur = getPSData(); cur.facts = fa.value; setPSData(cur); });
+    $$(".ps-chk input", host).forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var allOk = $$(".ps-chk input", host).every(function (x) { return x.checked; });
+        warn.classList.toggle("on", !allOk);
+        okMsg.style.display = allOk ? "block" : "none";
+      });
+    });
+  }
+
+  function toolPS3(host) {
+    var d = getPSData();
+    var presets = ["Договориться о новых правилах", "Спокойно обозначить границы", "Исправить ошибку", "Прояснить ситуацию"];
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Практика · простая и реалистичная цель</span><span class="tool-sub">шаг 3 из 7</span></div>' +
+      '<div class="pick"></div>' +
+      '<div class="field"><label for="ps-goal">Что конкретно должно измениться? (зависит от моих действий)</label>' +
+      '<input id="ps-goal" type="text" placeholder="Например: Согласовать с коллегой новый срок сдачи до завтра"></div>';
+    var pick = $(".pick", host), inp = $("#ps-goal", host);
+    inp.value = d.goal || "";
+    presets.forEach(function (p) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = p;
+      b.addEventListener("click", function () { inp.value = p + ": "; inp.focus(); var cur = getPSData(); cur.goal = inp.value; setPSData(cur); });
+      pick.appendChild(b);
+    });
+    inp.addEventListener("input", function () { var cur = getPSData(); cur.goal = inp.value; setPSData(cur); });
+  }
+  function toolPS4(host) {
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Мозговой штурм · все идеи без критики</span><span class="tool-sub" id="ps-count">0 идей</span></div>' +
+      '<div class="ctrls">' +
+      '<input id="ps-idea-in" type="text" placeholder="Запишите любую идею, даже смелую..." style="flex:1;min-width:180px;font:inherit;font-size:14px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' +
+      '<button class="btn sm" type="button" id="ps-idea-add"><span>+ Добавить</span></button>' +
+      '</div><div class="idea-list" id="ps-ideas"></div>';
+    var list = $("#ps-ideas", host), inp = $("#ps-idea-in", host), cnt = $("#ps-count", host);
+    function render() {
+      var arr = getPSData().ideas || [];
+      list.innerHTML = ""; cnt.textContent = arr.length + " идей";
+      arr.forEach(function (it, idx) {
+        var row = document.createElement("div"); row.className = "idea-item";
+        row.innerHTML = '<span>' + (idx + 1) + '. ' + it.text.replace(/</g, "&lt;") + '</span><button type="button" class="del" title="Удалить">×</button>';
+        $(".del", row).addEventListener("click", function () { var cur = getPSData(); cur.ideas.splice(idx, 1); setPSData(cur); render(); });
+        list.appendChild(row);
+      });
+    }
+    function add() {
+      var val = inp.value.trim(); if (!val) return;
+      var cur = getPSData(); cur.ideas = cur.ideas || []; cur.ideas.push({ text: val, picked: false });
+      setPSData(cur); inp.value = ""; render();
+    }
+    $("#ps-idea-add", host).addEventListener("click", add);
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    render();
+  }
+
+  function toolPS5(host) {
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Выбор 1–2 лучших решений</span><span class="tool-sub">шаг 5 из 7</span></div>' +
+      '<div class="tool-hint">Отметьте галочкой решения из Шага 4, которые лучше всего ведут к вашей цели.</div>' +
+      '<div class="idea-list" id="ps-pick-list"></div>' +
+      '<div class="ctrls" style="margin-top:10px"><button class="btn ghost sm" type="button" id="ps-sync"><span>Обновить список из Шага 4</span></button></div>';
+    var list = $("#ps-pick-list", host);
+    function render() {
+      var arr = getPSData().ideas || [];
+      list.innerHTML = "";
+      if (!arr.length) { list.innerHTML = '<div class="tool-hint">Сначала добавьте идеи на Шаге 4.</div>'; return; }
+      arr.forEach(function (it, idx) {
+        var lbl = document.createElement("label");
+        lbl.className = "idea-item" + (it.picked ? " picked" : "");
+        lbl.innerHTML = '<input type="checkbox"' + (it.picked ? " checked" : "") + '><span>' + it.text.replace(/</g, "&lt;") + '</span>';
+        $("input", lbl).addEventListener("change", function (e) { var cur = getPSData(); cur.ideas[idx].picked = e.target.checked; setPSData(cur); render(); });
+        list.appendChild(lbl);
+      });
+    }
+    $("#ps-sync", host).addEventListener("click", render);
+    render();
+  }
+
+  function toolPS6(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">План действия</span><span class="tool-sub">шаг 6 из 7</span></div>' +
+      '<div class="fields">' +
+      '<div class="field"><label for="ps-step">Первый конкретный шаг (ближайшие 24 часа)</label><input id="ps-step" type="text" placeholder="Что, где и когда я сделаю"></div>' +
+      '<div class="field"><label for="ps-planb">Запасной вариант (из списка идей)</label><input id="ps-planb" type="text" placeholder="Что сделаю при препятствии"></div>' +
+      '</div>';
+    var st = $("#ps-step", host), pb = $("#ps-planb", host);
+    st.value = d.step || ""; pb.value = d.planB || "";
+    st.addEventListener("input", function () { var cur = getPSData(); cur.step = st.value; setPSData(cur); });
+    pb.addEventListener("input", function () { var cur = getPSData(); cur.planB = pb.value; setPSData(cur); });
+  }
+
+  function toolPS7(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Оценка результата и экспорт</span><span class="tool-sub">шаг 7 из 7</span></div>' +
+      '<div class="field"><label for="ps-result">Что получилось? Достигнута ли цель и снизилась ли эмоция?</label>' +
+      '<textarea id="ps-result" rows="2" placeholder="Сработало — закрепляю. Не сработало — возвращаюсь к Шагу 5..."></textarea></div>' +
+      '<div class="ctrls" style="margin-top:12px">' +
+      '<button class="btn sm" type="button" id="ps-copy"><span>Скопировать разбор (7 шагов)</span></button>' +
+      '<button class="btn ghost sm" type="button" id="ps-back5"><span>Не сработало → к Шагу 5</span></button>' +
+      '<button class="btn ghost sm" type="button" id="ps-clear"><span>Очистить</span></button>' +
+      '</div>';
+    var res = $("#ps-result", host), clr = $("#ps-clear", host);
+    res.value = d.result || "";
+    res.addEventListener("input", function () { var cur = getPSData(); cur.result = res.value; setPSData(cur); });
+    $("#ps-back5", host).addEventListener("click", function () {
+      var target = document.getElementById("step-5");
+      if (target) { target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }); toast("Выберите другое решение на Шаге 5"); }
+    });
+    $("#ps-copy", host).addEventListener("click", function () {
+      var cur = getPSData();
+      var allIdeas = (cur.ideas || []).map(function (x) { return (x.picked ? "[✓] " : "[ ] ") + x.text; }).join("\n");
+      copyText([
+        "Решение проблемы · 7 шагов ДБТ (М. Линехан)",
+        "1. Ситуация: " + (cur.event || "—"),
+        "2. Факты: " + (cur.facts || "—"),
+        "3. Цель: " + (cur.goal || "—"),
+        "4–5. Идеи и выбор:\n" + (allIdeas || "—"),
+        "6. Первый шаг: " + (cur.step || "—") + (cur.planB ? " (План Б: " + cur.planB + ")" : ""),
+        "7. Результат: " + (cur.result || "—")
+      ].join("\n"));
+    });
+    var armed = false, pt;
+    clr.addEventListener("click", function () {
+      if (!armed) { armed = true; clr.querySelector("span").textContent = "Точно очистить?"; pt = setTimeout(function () { armed = false; clr.querySelector("span").textContent = "Очистить"; }, 3500); return; }
+      clearTimeout(pt); armed = false; clr.querySelector("span").textContent = "Очистить";
+      store.del("dbt-ps-data"); res.value = "";
+      toast("Разбор очищен");
+    });
+    host.appendChild(rateRow("РЕШЕНИЕ · после 7 шагов", function (v) { addLog("РЕШЕНИЕ · 7 шагов", v, getPSData().goal.slice(0, 50)); }));
+  }
+
   var TOOLS = {
     cold: toolCold, relax: toolRelax, move: toolMove, breath: toolBreath,
     freeze: toolFreeze, pause: toolPause, observe: toolObserve, wise: toolWise,
-    pc1: toolPC1, pc2: toolPC2, pc3: toolPC3, pc4: toolPC4
+    pc1: toolPC1, pc2: toolPC2, pc3: toolPC3, pc4: toolPC4,
+    ps1: toolPS1, ps2: toolPS2, ps3: toolPS3, ps4: toolPS4, ps5: toolPS5, ps6: toolPS6, ps7: toolPS7
   };
 
 

@@ -254,6 +254,21 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   border:1px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical}
 .field input:focus,.field textarea:focus{border-color:var(--a-main);outline:none;box-shadow:0 0 0 3px var(--a-soft)}
 
+/* ---------- решение проблемы: мозговой штурм и чек-лист ---------- */
+.ps-checks{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.ps-chk{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink);cursor:pointer}
+.ps-chk input{accent-color:var(--a-main);width:16px;height:16px;cursor:pointer}
+.ps-warn{margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--a-soft);color:var(--a-deep);font-size:13px;display:none}
+.ps-warn.on{display:block}
+.idea-list{display:flex;flex-direction:column;gap:7px;margin:12px 0 0}
+.idea-item{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:11px;border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:.15s var(--ease)}
+.idea-item.picked{border-color:var(--a-main);background:var(--a-soft)}
+.idea-item input[type=checkbox]{accent-color:var(--a-main);width:16px;height:16px;cursor:pointer}
+.idea-item span{flex:1;font-size:14px}
+.idea-item .del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:17px;padding:0 4px;line-height:1}
+.idea-item .del:hover{color:var(--no)}
+
+
 /* ---------- карточка и дневник ---------- */
 .fill{margin:0 0 15px}
 .fill .fl{font-size:12.5px;font-weight:700;color:var(--a-deep);margin-bottom:6px}

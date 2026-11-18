@@ -1,15 +1,18 @@
-const CACHE = 'dbt-offline-v2';
+const CACHE = 'dbt-offline-v4';
 const FILES = [
   './',
   './index.html',
   './trud.html',
   './stop.html',
   './pros_cons.html',
+  './problem_solving.html',
   './trud.pdf',
   './stop.pdf',
   './pros_cons.pdf',
+  './problem_solving.pdf',
   './manifest.json',
-  './icon.png'
+  './icon.png',
+  './favicon.png'
 ];
 
 self.addEventListener('install', e => {

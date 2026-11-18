@@ -275,6 +275,21 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   border:1px solid var(--line);background:var(--surface);color:var(--ink);resize:vertical}
 .field input:focus,.field textarea:focus{border-color:var(--a-main);outline:none;box-shadow:0 0 0 3px var(--a-soft)}
 
+/* ---------- решение проблемы: мозговой штурм и чек-лист ---------- */
+.ps-checks{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.ps-chk{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink);cursor:pointer}
+.ps-chk input{accent-color:var(--a-main);width:16px;height:16px;cursor:pointer}
+.ps-warn{margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--a-soft);color:var(--a-deep);font-size:13px;display:none}
+.ps-warn.on{display:block}
+.idea-list{display:flex;flex-direction:column;gap:7px;margin:12px 0 0}
+.idea-item{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:11px;border:1px solid var(--line);background:var(--surface);cursor:pointer;transition:.15s var(--ease)}
+.idea-item.picked{border-color:var(--a-main);background:var(--a-soft)}
+.idea-item input[type=checkbox]{accent-color:var(--a-main);width:16px;height:16px;cursor:pointer}
+.idea-item span{flex:1;font-size:14px}
+.idea-item .del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:17px;padding:0 4px;line-height:1}
+.idea-item .del:hover{color:var(--no)}
+
+
 /* ---------- карточка и дневник ---------- */
 .fill{margin:0 0 15px}
 .fill .fl{font-size:12.5px;font-weight:700;color:var(--a-deep);margin-bottom:6px}
@@ -417,6 +432,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   <a class="tab " href="trud.html">ТРУД</a>
   <a class="tab " href="stop.html">СТОП</a>
   <a class="tab on" href="pros_cons.html">ЗА/ПРОТИВ</a>
+  <a class="tab " href="problem_solving.html">РЕШЕНИЕ</a>
   <a class="tab icon" href="pros_cons.pdf" download><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 2.5v9"/><path d="M4.4 8.2 8 11.8l3.6-3.6"/><path d="M2.8 13.5h10.4"/></svg>PDF</a>
   <button class="tab icon" type="button" id="print-btn"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4.5 6V2.5h7V6"/><rect x="2.5" y="6" width="11" height="5" rx="1.4"/><path d="M4.5 9.5h7v4h-7z"/></svg>Печать</button>
 </div><div class="progress"><i id="progress-bar"></i></div></nav>
@@ -432,7 +448,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   <p class="cover-note">Когда накал спал до 5–7, но рука всё ещё тянется сорваться</p>
   <div class="acronym"><button class="arow" type="button" data-jump="step-1"><span class="bl">1</span><span class="nm">Назовите импульс</span><span class="hint">что хочется сделать</span></button><button class="arow" type="button" data-jump="step-2"><span class="bl">2</span><span class="nm">Сторона срыва</span><span class="hint">выгода сейчас и цена завтра</span></button><button class="arow" type="button" data-jump="step-3"><span class="bl">3</span><span class="nm">Сторона сдержанности</span><span class="hint">трудность сейчас и польза потом</span></button><button class="arow" type="button" data-jump="step-4"><span class="bl">4</span><span class="nm">Выбор по целям</span><span class="hint">опора на мудрый разум</span></button></div>
   <p class="lead" style="margin-top:18px">«За и против» не обесценивает желание сорваться — он показывает полную цену решения. В кризисе мозг видит только ближайшие 5 минут; матрица возвращает картину целиком.</p>
-  <div class="box tip"><span class="lbl">Как открывать буклет</span>В остром кризисе (8–10 баллов) сначала сделайте ТРУД или СТОП. Когда мышление вернулось (4–7 баллов), пройдите по четырём шагам и заполните матрицу.</div>
+  <div class="box tip"><span class="lbl">Как открывать буклет</span>В остром кризисе (8–10 баллов) сначала сделайте ТРУД или СТОП. Когда мышление вернулось (5–7 баллов), пройдите по четырём шагам и заполните матрицу.</div>
   <div class="cover-cta noprint">
     <button class="btn" type="button" id="cover-sos">Накрывает прямо сейчас</button>
     <button class="btn ghost" type="button" data-jump="step-1">К шагам навыка</button>
@@ -444,8 +460,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 <section class="page reveal" id="when">
   <p class="pnum">01 · Когда применять</p>
   <h2>Сначала проверьте: это кризис?</h2>
-  <div class="block"><h3>Это кризис, если</h3><ul class="dash"><li>ситуация сильно напряжённая;</li><li>она краткосрочная — не будет длиться вечно;</li><li>она давит требованием решить всё прямо сейчас.</li></ul></div>
-  <div class="block"><h3>Навыки выживания в кризисе нужны, когда</h3><ul class="dash"><li>боль сильная, а быстро помочь себе нечем;</li><li>хочется действовать по эмоции, но это сделает хуже;</li><li>эмоциональный разум вот-вот захватит управление, а нужно остаться в навыках;</li><li>вас накрывает, но требования и дела ждать не могут;</li><li>возбуждение на пределе, а проблему сейчас не решить.</li></ul></div>
+  <div class="block"><h3>Это кризис, если</h3><ul class="dash"><li>ситуация сильно напряжённая;</li><li>она краткосрочная — не будет длиться вечно;</li><li>она давит требованием решить всё прямо сейчас.</li></ul></div><div class="block"><h3>Навыки выживания в кризисе нужны, когда</h3><ul class="dash"><li>боль сильная, а быстро помочь себе нечем;</li><li>хочется действовать по эмоции, но это сделает хуже;</li><li>эмоциональный разум вот-вот захватит управление, а нужно остаться в навыках;</li><li>вас накрывает, но требования и дела ждать не могут;</li><li>возбуждение на пределе, а проблему сейчас не решить.</li></ul></div>
   <div class="block"><h3>Типичные ситуации в жизни</h3><ul class="dash"><li>Конфликт: хочется написать длинное обвиняющее сообщение или заблокировать близкого.</li><li>Самоповреждение: побуждение причинить себе боль, чтобы заглушить душевную тяжесть.</li><li>Импульсивные поступки: уволиться одним днём, потратить все деньги, употребить.</li><li>Избегание: бросить терапию, отменить важную встречу, исчезнуть без объяснений.</li><li>Требование гарантий: звонить двадцать раз подряд, чтобы услышать «я тебя не брошу».</li><li>Ощущение, что удержаться от срыва невозможно и бесполезно.</li></ul></div>
   <div class="box tip"><span class="lbl">Цель навыка</span>Пережить кризис, не сделав хуже. Не решить проблему и не стать спокойным навсегда — только не ухудшить.</div>
   <div class="pfoot printonly"><span>«За/против» · Навыки выживания в кризисе</span><span>2 / 8</span></div>
@@ -465,7 +480,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     </div>
     <p class="phase" id="scale-rec" style="margin:12px 0 0"></p>
   </div>
-  <div class="block"><h3>Место навыка в цепочке</h3><div class="chain"><span class="pill">СТОП</span><span class="arrow"><svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></span><span class="pill">ТРУД</span><span class="arrow"><svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></span><span class="pill on">«За/против»</span><span class="arrow"><svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></span><span class="pill">Позже: решение проблемы</span></div><p class="note">Навыки выживания не решают проблему — они помогают пережить кризис, не сделав хуже.</p></div>
+  <div class="block"><h3>Место навыка в цепочке</h3><div class="chain"><span class="pill">СТОП</span><span class="arrow"><svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></span><span class="pill">ТРУД</span><span class="arrow"><svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></span><span class="pill on">«За/против»</span><span class="arrow"><svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></span><span class="pill">Решение проблемы</span></div><p class="note">Первые три навыка помогают пережить кризис, не сделав хуже, а «Решение проблемы» — изменить саму ситуацию позже.</p></div>
   <div class="pfoot printonly"><span>«За/против» · Навыки выживания в кризисе</span><span>3 / 8</span></div>
 </section>
 <section class="page reveal" id="step-1">
@@ -552,7 +567,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     </div>
   </div>
   <div class="safety"><b>Важно.</b> Если есть риск для жизни — сразу звоните терапевту, в кризисную службу или 112. Буклет — памятка к терапии, а не её замена.</div>
-  <a class="xlink" href="trud.html">Следующий буклет серии: ТРУД — Быстро снизить накал эмоции через тело <svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></a>
+  <a class="xlink" href="problem_solving.html">Следующий буклет серии: Решение проблемы — Изменить саму ситуацию, когда эмоция оправдана фактами <svg viewBox="0 0 16 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 5h13"/><path d="M10.6 1.6 14 5l-3.4 3.4"/></svg></a>
   <div class="sources">По материалам: M. M. Linehan. DBT Skills Training Handouts and Worksheets, 2nd ed. (2015). Distress Tolerance Handouts 3, 5 (Pros and Cons). Навык взвешивания последствий импульсивного и сдержанного поведения.</div>
   <div class="pfoot printonly"><span>«За/против» · Навыки выживания в кризисе</span><span>8 / 8</span></div>
 </section>
@@ -1189,10 +1204,179 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     }));
   }
 
+  /* ---------- РЕШЕНИЕ ПРОБЛЕМЫ: 7 отдельных шагов (М. Линехан) ---------- */
+  function getPSData() {
+    return store.get("dbt-ps-data", {
+      event: "", facts: "", goal: "", ideas: [], step: "", planB: "", result: ""
+    });
+  }
+  function setPSData(d) { store.set("dbt-ps-data", d); }
+
+  function toolPS1(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Практика · описание события</span><span class="tool-sub">шаг 1 из 7</span></div>' +
+      '<div class="field"><label for="ps-event">Что произошло? (как видеокамера, без оценок и ярлыков)</label>' +
+      '<textarea id="ps-event" rows="3" placeholder="Например: Коллега не прислал свою часть отчёта к 15:00, как мы договаривались вчера..."></textarea></div>';
+    var ev = $("#ps-event", host);
+    ev.value = d.event || "";
+    ev.addEventListener("input", function () { var cur = getPSData(); cur.event = ev.value; setPSData(cur); });
+  }
+
+  function toolPS2(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Практика · проверка фактов</span><span class="tool-sub">шаг 2 из 7</span></div>' +
+      '<div class="field"><label for="ps-facts">Проверенные факты (отдельно от домыслов и тревожных мыслей)</label>' +
+      '<textarea id="ps-facts" rows="3" placeholder="Факт: письма нет. Мысль: «он меня подставляет». Эмоция оправдана фактами..."></textarea></div>' +
+      '<div class="tool-hint" style="margin:12px 0 6px">Отметьте все пункты, которые выполняются:</div>' +
+      '<div class="ps-checks">' +
+      '<label class="ps-chk"><input type="checkbox"> Факты подтвердились (если нет — вернитесь к Шагу 1)</label>' +
+      '<label class="ps-chk"><input type="checkbox"> Моя эмоция оправдана реальными фактами</label>' +
+      '<label class="ps-chk"><input type="checkbox"> Ситуацию можно изменить моими действиями</label>' +
+      '</div>' +
+      '<div class="ps-warn on" id="ps-warn">Пока отмечены не все пункты: если факты неверны — перепишите Шаг 1. Если эмоция не оправдана или ситуацию нельзя изменить — этот буклет не подойдёт: обсудите с терапевтом навыки принятия или противоположного действия, а пережить накал здесь помогут СТОП и ТРУД.</div>' +
+      '<div class="tool-hint" id="ps-ok" style="display:none;color:var(--a-deep);font-weight:700;margin-top:10px">Все условия выполнены — можно переходить к Шагу 3 и формулировать цель.</div>';
+    var fa = $("#ps-facts", host), warn = $("#ps-warn", host), okMsg = $("#ps-ok", host);
+    fa.value = d.facts || "";
+    fa.addEventListener("input", function () { var cur = getPSData(); cur.facts = fa.value; setPSData(cur); });
+    $$(".ps-chk input", host).forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        var allOk = $$(".ps-chk input", host).every(function (x) { return x.checked; });
+        warn.classList.toggle("on", !allOk);
+        okMsg.style.display = allOk ? "block" : "none";
+      });
+    });
+  }
+
+  function toolPS3(host) {
+    var d = getPSData();
+    var presets = ["Договориться о новых правилах", "Спокойно обозначить границы", "Исправить ошибку", "Прояснить ситуацию"];
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Практика · простая и реалистичная цель</span><span class="tool-sub">шаг 3 из 7</span></div>' +
+      '<div class="pick"></div>' +
+      '<div class="field"><label for="ps-goal">Что конкретно должно измениться? (зависит от моих действий)</label>' +
+      '<input id="ps-goal" type="text" placeholder="Например: Согласовать с коллегой новый срок сдачи до завтра"></div>';
+    var pick = $(".pick", host), inp = $("#ps-goal", host);
+    inp.value = d.goal || "";
+    presets.forEach(function (p) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = p;
+      b.addEventListener("click", function () { inp.value = p + ": "; inp.focus(); var cur = getPSData(); cur.goal = inp.value; setPSData(cur); });
+      pick.appendChild(b);
+    });
+    inp.addEventListener("input", function () { var cur = getPSData(); cur.goal = inp.value; setPSData(cur); });
+  }
+  function toolPS4(host) {
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Мозговой штурм · все идеи без критики</span><span class="tool-sub" id="ps-count">0 идей</span></div>' +
+      '<div class="ctrls">' +
+      '<input id="ps-idea-in" type="text" placeholder="Запишите любую идею, даже смелую..." style="flex:1;min-width:180px;font:inherit;font-size:14px;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' +
+      '<button class="btn sm" type="button" id="ps-idea-add"><span>+ Добавить</span></button>' +
+      '</div><div class="idea-list" id="ps-ideas"></div>';
+    var list = $("#ps-ideas", host), inp = $("#ps-idea-in", host), cnt = $("#ps-count", host);
+    function render() {
+      var arr = getPSData().ideas || [];
+      list.innerHTML = ""; cnt.textContent = arr.length + " идей";
+      arr.forEach(function (it, idx) {
+        var row = document.createElement("div"); row.className = "idea-item";
+        row.innerHTML = '<span>' + (idx + 1) + '. ' + it.text.replace(/</g, "&lt;") + '</span><button type="button" class="del" title="Удалить">×</button>';
+        $(".del", row).addEventListener("click", function () { var cur = getPSData(); cur.ideas.splice(idx, 1); setPSData(cur); render(); });
+        list.appendChild(row);
+      });
+    }
+    function add() {
+      var val = inp.value.trim(); if (!val) return;
+      var cur = getPSData(); cur.ideas = cur.ideas || []; cur.ideas.push({ text: val, picked: false });
+      setPSData(cur); inp.value = ""; render();
+    }
+    $("#ps-idea-add", host).addEventListener("click", add);
+    inp.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    render();
+  }
+
+  function toolPS5(host) {
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Выбор 1–2 лучших решений</span><span class="tool-sub">шаг 5 из 7</span></div>' +
+      '<div class="tool-hint">Отметьте галочкой решения из Шага 4, которые лучше всего ведут к вашей цели.</div>' +
+      '<div class="idea-list" id="ps-pick-list"></div>' +
+      '<div class="ctrls" style="margin-top:10px"><button class="btn ghost sm" type="button" id="ps-sync"><span>Обновить список из Шага 4</span></button></div>';
+    var list = $("#ps-pick-list", host);
+    function render() {
+      var arr = getPSData().ideas || [];
+      list.innerHTML = "";
+      if (!arr.length) { list.innerHTML = '<div class="tool-hint">Сначала добавьте идеи на Шаге 4.</div>'; return; }
+      arr.forEach(function (it, idx) {
+        var lbl = document.createElement("label");
+        lbl.className = "idea-item" + (it.picked ? " picked" : "");
+        lbl.innerHTML = '<input type="checkbox"' + (it.picked ? " checked" : "") + '><span>' + it.text.replace(/</g, "&lt;") + '</span>';
+        $("input", lbl).addEventListener("change", function (e) { var cur = getPSData(); cur.ideas[idx].picked = e.target.checked; setPSData(cur); render(); });
+        list.appendChild(lbl);
+      });
+    }
+    $("#ps-sync", host).addEventListener("click", render);
+    render();
+  }
+
+  function toolPS6(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">План действия</span><span class="tool-sub">шаг 6 из 7</span></div>' +
+      '<div class="fields">' +
+      '<div class="field"><label for="ps-step">Первый конкретный шаг (ближайшие 24 часа)</label><input id="ps-step" type="text" placeholder="Что, где и когда я сделаю"></div>' +
+      '<div class="field"><label for="ps-planb">Запасной вариант (из списка идей)</label><input id="ps-planb" type="text" placeholder="Что сделаю при препятствии"></div>' +
+      '</div>';
+    var st = $("#ps-step", host), pb = $("#ps-planb", host);
+    st.value = d.step || ""; pb.value = d.planB || "";
+    st.addEventListener("input", function () { var cur = getPSData(); cur.step = st.value; setPSData(cur); });
+    pb.addEventListener("input", function () { var cur = getPSData(); cur.planB = pb.value; setPSData(cur); });
+  }
+
+  function toolPS7(host) {
+    var d = getPSData();
+    host.innerHTML =
+      '<div class="tool-head"><span class="tool-title">Оценка результата и экспорт</span><span class="tool-sub">шаг 7 из 7</span></div>' +
+      '<div class="field"><label for="ps-result">Что получилось? Достигнута ли цель и снизилась ли эмоция?</label>' +
+      '<textarea id="ps-result" rows="2" placeholder="Сработало — закрепляю. Не сработало — возвращаюсь к Шагу 5..."></textarea></div>' +
+      '<div class="ctrls" style="margin-top:12px">' +
+      '<button class="btn sm" type="button" id="ps-copy"><span>Скопировать разбор (7 шагов)</span></button>' +
+      '<button class="btn ghost sm" type="button" id="ps-back5"><span>Не сработало → к Шагу 5</span></button>' +
+      '<button class="btn ghost sm" type="button" id="ps-clear"><span>Очистить</span></button>' +
+      '</div>';
+    var res = $("#ps-result", host), clr = $("#ps-clear", host);
+    res.value = d.result || "";
+    res.addEventListener("input", function () { var cur = getPSData(); cur.result = res.value; setPSData(cur); });
+    $("#ps-back5", host).addEventListener("click", function () {
+      var target = document.getElementById("step-5");
+      if (target) { target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }); toast("Выберите другое решение на Шаге 5"); }
+    });
+    $("#ps-copy", host).addEventListener("click", function () {
+      var cur = getPSData();
+      var allIdeas = (cur.ideas || []).map(function (x) { return (x.picked ? "[✓] " : "[ ] ") + x.text; }).join("\n");
+      copyText([
+        "Решение проблемы · 7 шагов ДБТ (М. Линехан)",
+        "1. Ситуация: " + (cur.event || "—"),
+        "2. Факты: " + (cur.facts || "—"),
+        "3. Цель: " + (cur.goal || "—"),
+        "4–5. Идеи и выбор:\n" + (allIdeas || "—"),
+        "6. Первый шаг: " + (cur.step || "—") + (cur.planB ? " (План Б: " + cur.planB + ")" : ""),
+        "7. Результат: " + (cur.result || "—")
+      ].join("\n"));
+    });
+    var armed = false, pt;
+    clr.addEventListener("click", function () {
+      if (!armed) { armed = true; clr.querySelector("span").textContent = "Точно очистить?"; pt = setTimeout(function () { armed = false; clr.querySelector("span").textContent = "Очистить"; }, 3500); return; }
+      clearTimeout(pt); armed = false; clr.querySelector("span").textContent = "Очистить";
+      store.del("dbt-ps-data"); res.value = "";
+      toast("Разбор очищен");
+    });
+    host.appendChild(rateRow("РЕШЕНИЕ · после 7 шагов", function (v) { addLog("РЕШЕНИЕ · 7 шагов", v, getPSData().goal.slice(0, 50)); }));
+  }
+
   var TOOLS = {
     cold: toolCold, relax: toolRelax, move: toolMove, breath: toolBreath,
     freeze: toolFreeze, pause: toolPause, observe: toolObserve, wise: toolWise,
-    pc1: toolPC1, pc2: toolPC2, pc3: toolPC3, pc4: toolPC4
+    pc1: toolPC1, pc2: toolPC2, pc3: toolPC3, pc4: toolPC4,
+    ps1: toolPS1, ps2: toolPS2, ps3: toolPS3, ps4: toolPS4, ps5: toolPS5, ps6: toolPS6, ps7: toolPS7
   };
 
 
