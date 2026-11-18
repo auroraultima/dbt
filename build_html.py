@@ -190,8 +190,9 @@ def sections(sk):
     last_sec_num = '%02d' % (len(sk["steps"]) + 3)
     last_page_num = len(sk["steps"]) + 4
     fields = "".join(
-        '<div class="fill"><div class="fl">%s</div>'
-        '<textarea data-f="f%d" rows="2" aria-label="%s"></textarea></div>' % (esc(f), i, esc(f))
+        '<div class="fill"><label class="fl" for="card-%s-f%d">%s</label>'
+        '<textarea id="card-%s-f%d" name="f%d" data-f="f%d" rows="2"></textarea></div>'
+        % (sk["id"], i, esc(f), sk["id"], i, i, i)
         for i, f in enumerate(SHARED["card"]["fields"], 1)
     )
     P.append(f"""<section class="page reveal" id="practice">
