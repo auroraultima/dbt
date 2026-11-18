@@ -279,6 +279,7 @@ PAGE = r"""<!DOCTYPE html>
   <a class="tab {{ON_STOP}}" href="stop.html">СТОП</a>
   <a class="tab {{ON_PC}}" href="pros_cons.html">ЗА/ПРОТИВ</a>
   <a class="tab {{ON_PS}}" href="problem_solving.html">РЕШЕНИЕ</a>
+  <a class="tab" href="diary.html">ДНЕВНИК</a>
   <a class="tab icon" href="{{PDF}}" download>{{ICO_DOWN}}PDF</a>
   <button class="tab icon" type="button" id="print-btn">{{ICO_PRINT}}Печать</button>
 </div><div class="progress"><i id="progress-bar"></i></div></nav>
@@ -414,6 +415,7 @@ INDEX = r"""<!doctype html>
   <a class="tab" href="stop.html">СТОП</a>
   <a class="tab" href="pros_cons.html">ЗА/ПРОТИВ</a>
   <a class="tab" href="problem_solving.html">РЕШЕНИЕ</a>
+  <a class="tab" href="diary.html">ДНЕВНИК</a>
   <button class="tab icon" type="button" id="print-btn">{{ICO_PRINT}}Печать</button>
 </div></nav>
 <div class="wrap">
@@ -428,7 +430,7 @@ INDEX = r"""<!doctype html>
     </div>
   </div>
   <h1 class="hub-title">Четыре навыка: от <em>острого кризиса</em> и <b>импульса</b> до <span>решения проблемы</span></h1>
-  <p class="hub-lead" style="max-width:none">Интерактивные буклеты по диалектической поведенческой терапии (ДБТ) Марши Линехан. Единая цепочка шагов: сначала снизить накал через тело и удержаться от срыва, а когда вернётся мудрый разум — спокойно изменить саму ситуацию. Внутри есть таймеры, рабочие матрицы, дневник практики и версии для печати A5.</p>
+  <p class="hub-lead" style="max-width:none">Интерактивные буклеты по диалектической поведенческой терапии (ДБТ) Марши Линехан. Единая цепочка шагов: сначала снизить накал через тело и удержаться от срыва, а когда вернётся мудрый разум — спокойно изменить саму ситуацию. Внутри есть таймеры, рабочие матрицы, единый локальный дневник с поиском и версии для печати A5.</p>
     <div class="skill-list">
       <a class="scard trud" href="trud.html">
         <div class="em">{{EM_TRUD}}</div>
@@ -486,27 +488,34 @@ INDEX = r"""<!doctype html>
       </div>
     </div>
     <details class="guide-box">
-      <summary>Как пользоваться приложением, тренажёрами и PDF-буклетами</summary>
+      <summary>Как пользоваться приложением, дневником и PDF-буклетами</summary>
       <div class="guide-body">
         <h4>1. Офлайн-доступ на телефоне (работает без интернета)</h4>
         <ul>
           <li><b>Android (Chrome):</b> нажмите три точки в правом верхнем углу → <b>«Установить приложение»</b>.</li>
           <li><b>iPhone (Safari):</b> нажмите кнопку <b>«Поделиться»</b> внизу → <b>«На экран „Домой“»</b>.</li>
-          <li>После первого открытия все страницы, интерактивные тренажёры и PDF-файлы сохраняются в память телефона.</li>
+          <li>После первого открытия все страницы, тренажёры, дневник и PDF-файлы сохраняются в память телефона.</li>
         </ul>
         <h4>2. Интерактивные инструменты внутри буклетов</h4>
         <ul>
           <li><b>ТРУД и СТОП:</b> встроенные таймеры для холодной воды (30 сек), дыхательного ритма, мышечной релаксации и паузы, а также тренажёр «Факт или мысль».</li>
-          <li><b>«За / против»:</b> интерактивная матрица из 4 квадратов, которая сама собирает итоговую сводку.</li>
-          <li><b>«Решение проблемы»:</b> пошаговый конструктор из 7 шагов Линехан (проверка фактов, цель, мозговой штурм, план действий и возврат к шагу 5 при неудаче).</li>
-          <li><b>Карточка и дневник:</b> в конце каждого буклета есть <b>«Моя карточка на кризис»</b> и <b>«Дневник практики»</b> — записи хранятся строго локально в вашем браузере и копируются одной кнопкой для терапевта.</li>
+          <li><b>«За / против»:</b> интерактивная матрица из 4 квадратов с кнопкой <b>«Сохранить в дневник»</b> (после сохранения поля автоматически очищаются).</li>
+          <li><b>«Решение проблемы»:</b> пошаговый конструктор из 7 шагов Линехан (проверка фактов, цель, мозговой штурм, план действий, возврат к шагу 5 при неудаче и сохранение разбора в дневник).</li>
+          <li><b>Персональная карточка:</b> в конце каждого буклета есть <b>«Моя карточка на кризис»</b>, которая остаётся под рукой и копируется одной кнопкой.</li>
         </ul>
-        <h4>3. Печать и карманные буклеты A5</h4>
+        <h4>3. Единая вкладка «Дневник» и резервные копии</h4>
         <ul>
-          <li>В шапке каждого навыка есть кнопка <b>«PDF»</b> (готовый макет формата A5 для печати брошюрой) и кнопка <b>«Печать»</b>.</li>
+          <li>Во вкладке <b>«Дневник»</b> в верхнем меню собираются все ваши тренировки, отметки накала и полные разборы, сгруппированные по дням.</li>
+          <li>В дневнике работает <b>поиск по тексту</b>, выбор конкретной <b>даты</b> и <b>фильтры по навыкам</b>.</li>
+          <li>Все данные хранятся <b>только локально на вашем устройстве</b>. Вы можете скачать человекочитаемый отчёт для терапевта (<b>.txt</b>) или полную резервную копию базы (<b>.json</b>) для переноса на другое устройство.</li>
+        </ul>
+        <h4>4. Печать и карманные буклеты A5</h4>
+        <ul>
+          <li>В шапке каждого навыка есть кнопка <b>«PDF»</b> (готовый макет формата A5 на 8 или 11 страниц) и кнопка <b>«Печать»</b>.</li>
         </ul>
       </div>
     </details>
+
     <div class="safety" style="margin-top:18px">
       <b>Важно.</b> {{SAFETY}}
     </div>
@@ -553,9 +562,118 @@ def build_index():
     return out, len(html)
 
 
+DIARY = r"""<!doctype html>
+<html lang="ru">
+<head>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F7F5F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16191D" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Дневник практики — Навыки ДБТ</title>
+<style>{{FONTS}}
+{{CSS}}
+</style>
+</head>
+<body>
+<nav class="nav noprint"><div class="nav-in">
+  <a class="nav-brand" href="index.html">Навыки ДБТ · Самопомощь<span>Дневник практики и база записей</span></a>
+  <a class="tab" href="trud.html">ТРУД</a>
+  <a class="tab" href="stop.html">СТОП</a>
+  <a class="tab" href="pros_cons.html">ЗА/ПРОТИВ</a>
+  <a class="tab" href="problem_solving.html">РЕШЕНИЕ</a>
+  <a class="tab on" href="diary.html">ДНЕВНИК</a>
+  <button class="tab icon" type="button" id="print-btn">{{ICO_PRINT}}Печать</button>
+</div></nav>
+
+<div class="wrap" id="diary-app">
+  <section class="page cover">
+    <div class="cover-top">
+      <div>
+        <div class="eyebrow">ДБТ · Локальная база практики</div>
+        <div class="eyebrow q" style="margin-top:5px">Хранится только на вашем устройстве</div>
+      </div>
+    </div>
+    <h1 style="font-size:clamp(32px,6vw,46px)">ДНЕВНИК ПРАКТИКИ</h1>
+    <p class="lead" style="margin-top:12px">Единая хронология всех ваших тренировок, отметок накала, матриц «За / против» и разборов проблем по дням.</p>
+
+    <div class="db-stats">
+      <div class="db-stat"><div class="num" id="db-stat-total">0</div><div class="lbl">Всего записей в базе</div></div>
+      <div class="db-stat"><div class="num" id="db-stat-week">0</div><div class="lbl">За последние 7 дней</div></div>
+      <div class="db-stat"><div class="num" id="db-stat-drop">—</div><div class="lbl">Среднее снижение накала</div></div>
+    </div>
+
+    <div class="ctrls noprint" style="margin-top:18px">
+      <button class="btn sm" type="button" id="db-exp-txt">{{ICO_DOWN}}<span>Скачать отчёт (.txt)</span></button>
+      <button class="btn ghost sm" type="button" id="db-exp-json">{{ICO_DOWN}}<span>Резервная копия (.json)</span></button>
+      <button class="btn ghost sm" type="button" id="db-imp-json"><span>Загрузить из .json</span></button>
+      <input type="file" id="db-imp-file" accept=".json,application/json" style="display:none">
+    </div>
+  </section>
+
+  <section class="page">
+    <p class="pnum">01 · Поиск и фильтры</p>
+    <div class="db-bar noprint">
+      <input type="search" class="db-search" id="db-q" placeholder="Поиск по тексту записей, целям, мыслям..." aria-label="Поиск по тексту">
+      <input type="date" class="db-date" id="db-date" aria-label="Фильтр по дате">
+      <button class="btn ghost sm" type="button" id="db-date-clear"><span>Сбросить дату</span></button>
+    </div>
+    <div class="db-chips noprint">
+      <button type="button" class="db-chip on" data-skill="all">Все навыки</button>
+      <button type="button" class="db-chip" data-skill="trud">ТРУД</button>
+      <button type="button" class="db-chip" data-skill="stop">СТОП</button>
+      <button type="button" class="db-chip" data-skill="pros_cons">ЗА / ПРОТИВ</button>
+      <button type="button" class="db-chip" data-skill="problem_solving">РЕШЕНИЕ ПРОБЛЕМЫ</button>
+    </div>
+
+    <div id="db-list"></div>
+
+    <div class="safety" style="margin-top:20px">
+      <b>Приватность.</b> Все записи хранятся исключительно в локальной памяти вашего браузера и никуда не отправляются. Рекомендуем периодически скачивать резервную копию (<b>.json</b>).
+    </div>
+  </section>
+</div>
+
+<script>window.DBT_CONFIG={skill:"diary",acronym:"Дневник",latin:"DIARY"};</script>
+<script>
+{{JS}}
+</script>
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}</script>
+</body>
+</html>
+"""
+
+
+def build_diary():
+    css = (ASSETS / "app.css").read_text(encoding="utf-8")
+    for k, v in {"main": "#8FA1AC", "deep": "#CBD5DC", "mid": "#343D44", "soft": "#262D33", "tint": "#1E2429"}.items():
+        css = css.replace("DARK_ACCENT_" + k.upper(), v)
+    for k, v in {"main": "#5A6B75", "deep": "#3E4C55", "mid": "#DCE2E5", "soft": "#EEF2F4", "tint": "#F6F8F9"}.items():
+        css = css.replace("ACCENT_" + k.upper(), v)
+
+    html = DIARY
+    for a, b in {
+        "{{FONTS}}": font_css(),
+        "{{CSS}}": css,
+        "{{JS}}": (ASSETS / "app.js").read_text(encoding="utf-8"),
+        "{{ICO_PRINT}}": ICO_PRINT,
+        "{{ICO_DOWN}}": ICO_DOWN,
+    }.items():
+        html = html.replace(a, b)
+    out = HERE / "diary.html"
+    out.write_text(html, encoding="utf-8")
+    return out, len(html)
+
+
 if __name__ == "__main__":
     for sid in ("trud", "stop", "pros_cons", "problem_solving"):
         p, n = build(SKILLS[sid])
         print("built", p.name, round(n / 1024), "KB")
     p, n = build_index()
     print("built", p.name, round(n / 1024), "KB")
+    p, n = build_diary()
+    print("built", p.name, round(n / 1024), "KB")
+

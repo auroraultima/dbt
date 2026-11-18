@@ -313,6 +313,49 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 .saved{font-size:12px;color:var(--ok);opacity:0;transition:.3s;margin-left:8px}
 .saved.on{opacity:1}
 
+/* ---------- браузер БД: страница «Дневник» ---------- */
+.db-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 0}
+.db-stat{padding:12px 14px;border-radius:14px;background:var(--a-tint);border:1px solid var(--a-mid)}
+.db-stat .num{font-family:'PT Serif',Georgia,serif;font-weight:700;font-size:24px;color:var(--a-deep);line-height:1.1}
+.db-stat .lbl{font-size:12px;color:var(--muted);margin-top:3px}
+.db-bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;align-items:center}
+.db-search{flex:1;min-width:190px;font:inherit;font-size:14px;padding:8px 14px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.db-date{font:inherit;font-size:13.5px;padding:7px 12px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.db-search:focus,.db-date:focus{border-color:var(--a-main);outline:none;box-shadow:0 0 0 3px var(--a-soft)}
+.db-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.db-chip{font:inherit;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface);color:var(--muted);transition:.15s var(--ease)}
+.db-chip:hover{border-color:var(--a-mid);color:var(--a-deep)}
+.db-chip.on{background:var(--a-main);border-color:var(--a-main);color:var(--on-main)}
+.db-day{margin:20px 0 0}
+.db-day:first-child{margin-top:0}
+.db-day-head{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--a-deep);
+  padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:10px;display:flex;justify-content:space-between}
+.db-item{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px;margin-bottom:9px}
+.db-item-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.db-tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.db-tag.trud{background:#E8F2F4;color:#1E5765}
+.db-tag.stop{background:#FBEBE1;color:#8A4526}
+.db-tag.pros_cons{background:#EBF3ED;color:#36593F}
+.db-tag.problem_solving{background:#EBF1F8;color:#2F4666}
+@media (prefers-color-scheme: dark){
+  .db-tag.trud{background:#1F343A;color:#A7DCE7}
+  .db-tag.stop{background:#3A241C;color:#F2C0AA}
+  .db-tag.pros_cons{background:#223427;color:#B8DBC0}
+  .db-tag.problem_solving{background:#212E40;color:#B8D1F0}
+}
+.db-time{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.db-title{font-weight:700;font-size:14.5px;color:var(--ink)}
+.db-rate{margin-left:auto;font-weight:700;font-size:13px;color:var(--a-deep);background:var(--a-tint);
+  padding:2px 9px;border-radius:999px;border:1px solid var(--a-mid)}
+.db-del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:17px;padding:0 4px;line-height:1}
+.db-del:hover{color:var(--no)}
+.db-details{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--ink-2);
+  white-space:pre-line;line-height:1.48}
+@media (max-width:560px){.db-stats{grid-template-columns:1fr}}
+
 /* ---------- панель «накрывает сейчас» ---------- */
 .sos-btn{position:fixed;right:18px;bottom:18px;z-index:45;
   background:var(--a-main, #5A6B75)!important;color:var(--on-main, #fff)!important;
@@ -487,6 +530,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   <a class="tab" href="stop.html">СТОП</a>
   <a class="tab" href="pros_cons.html">ЗА/ПРОТИВ</a>
   <a class="tab" href="problem_solving.html">РЕШЕНИЕ</a>
+  <a class="tab" href="diary.html">ДНЕВНИК</a>
   <button class="tab icon" type="button" id="print-btn"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4.5 6V2.5h7V6"/><rect x="2.5" y="6" width="11" height="5" rx="1.4"/><path d="M4.5 9.5h7v4h-7z"/></svg>Печать</button>
 </div></nav>
 <div class="wrap">
@@ -501,7 +545,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     </div>
   </div>
   <h1 class="hub-title">Четыре навыка: от <em>острого кризиса</em> и <b>импульса</b> до <span>решения проблемы</span></h1>
-  <p class="hub-lead" style="max-width:none">Интерактивные буклеты по диалектической поведенческой терапии (ДБТ) Марши Линехан. Единая цепочка шагов: сначала снизить накал через тело и удержаться от срыва, а когда вернётся мудрый разум — спокойно изменить саму ситуацию. Внутри есть таймеры, рабочие матрицы, дневник практики и версии для печати A5.</p>
+  <p class="hub-lead" style="max-width:none">Интерактивные буклеты по диалектической поведенческой терапии (ДБТ) Марши Линехан. Единая цепочка шагов: сначала снизить накал через тело и удержаться от срыва, а когда вернётся мудрый разум — спокойно изменить саму ситуацию. Внутри есть таймеры, рабочие матрицы, единый локальный дневник с поиском и версии для печати A5.</p>
     <div class="skill-list">
       <a class="scard trud" href="trud.html">
         <div class="em"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 6c9 12 16 20 16 28a16 16 0 0 1-32 0c0-8 7-16 16-28z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M20 38c4-3 8 3 12 0s8 3 12 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M22 46c4-3 8 3 12 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></div>
@@ -559,27 +603,34 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       </div>
     </div>
     <details class="guide-box">
-      <summary>Как пользоваться приложением, тренажёрами и PDF-буклетами</summary>
+      <summary>Как пользоваться приложением, дневником и PDF-буклетами</summary>
       <div class="guide-body">
         <h4>1. Офлайн-доступ на телефоне (работает без интернета)</h4>
         <ul>
           <li><b>Android (Chrome):</b> нажмите три точки в правом верхнем углу → <b>«Установить приложение»</b>.</li>
           <li><b>iPhone (Safari):</b> нажмите кнопку <b>«Поделиться»</b> внизу → <b>«На экран „Домой“»</b>.</li>
-          <li>После первого открытия все страницы, интерактивные тренажёры и PDF-файлы сохраняются в память телефона.</li>
+          <li>После первого открытия все страницы, тренажёры, дневник и PDF-файлы сохраняются в память телефона.</li>
         </ul>
         <h4>2. Интерактивные инструменты внутри буклетов</h4>
         <ul>
           <li><b>ТРУД и СТОП:</b> встроенные таймеры для холодной воды (30 сек), дыхательного ритма, мышечной релаксации и паузы, а также тренажёр «Факт или мысль».</li>
-          <li><b>«За / против»:</b> интерактивная матрица из 4 квадратов, которая сама собирает итоговую сводку.</li>
-          <li><b>«Решение проблемы»:</b> пошаговый конструктор из 7 шагов Линехан (проверка фактов, цель, мозговой штурм, план действий и возврат к шагу 5 при неудаче).</li>
-          <li><b>Карточка и дневник:</b> в конце каждого буклета есть <b>«Моя карточка на кризис»</b> и <b>«Дневник практики»</b> — записи хранятся строго локально в вашем браузере и копируются одной кнопкой для терапевта.</li>
+          <li><b>«За / против»:</b> интерактивная матрица из 4 квадратов с кнопкой <b>«Сохранить в дневник»</b> (после сохранения поля автоматически очищаются).</li>
+          <li><b>«Решение проблемы»:</b> пошаговый конструктор из 7 шагов Линехан (проверка фактов, цель, мозговой штурм, план действий, возврат к шагу 5 при неудаче и сохранение разбора в дневник).</li>
+          <li><b>Персональная карточка:</b> в конце каждого буклета есть <b>«Моя карточка на кризис»</b>, которая остаётся под рукой и копируется одной кнопкой.</li>
         </ul>
-        <h4>3. Печать и карманные буклеты A5</h4>
+        <h4>3. Единая вкладка «Дневник» и резервные копии</h4>
         <ul>
-          <li>В шапке каждого навыка есть кнопка <b>«PDF»</b> (готовый макет формата A5 для печати брошюрой) и кнопка <b>«Печать»</b>.</li>
+          <li>Во вкладке <b>«Дневник»</b> в верхнем меню собираются все ваши тренировки, отметки накала и полные разборы, сгруппированные по дням.</li>
+          <li>В дневнике работает <b>поиск по тексту</b>, выбор конкретной <b>даты</b> и <b>фильтры по навыкам</b>.</li>
+          <li>Все данные хранятся <b>только локально на вашем устройстве</b>. Вы можете скачать человекочитаемый отчёт для терапевта (<b>.txt</b>) или полную резервную копию базы (<b>.json</b>) для переноса на другое устройство.</li>
+        </ul>
+        <h4>4. Печать и карманные буклеты A5</h4>
+        <ul>
+          <li>В шапке каждого навыка есть кнопка <b>«PDF»</b> (готовый макет формата A5 на 8 или 11 страниц) и кнопка <b>«Печать»</b>.</li>
         </ul>
       </div>
     </details>
+
     <div class="safety" style="margin-top:18px">
       <b>Важно.</b> Если есть риск для жизни — сразу звоните терапевту, в кризисную службу или 112. Буклет — памятка к терапии, а не её замена.
     </div>

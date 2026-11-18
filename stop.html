@@ -317,6 +317,49 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 .saved{font-size:12px;color:var(--ok);opacity:0;transition:.3s;margin-left:8px}
 .saved.on{opacity:1}
 
+/* ---------- браузер БД: страница «Дневник» ---------- */
+.db-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0 0}
+.db-stat{padding:12px 14px;border-radius:14px;background:var(--a-tint);border:1px solid var(--a-mid)}
+.db-stat .num{font-family:'PT Serif',Georgia,serif;font-weight:700;font-size:24px;color:var(--a-deep);line-height:1.1}
+.db-stat .lbl{font-size:12px;color:var(--muted);margin-top:3px}
+.db-bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;align-items:center}
+.db-search{flex:1;min-width:190px;font:inherit;font-size:14px;padding:8px 14px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.db-date{font:inherit;font-size:13.5px;padding:7px 12px;border-radius:999px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.db-search:focus,.db-date:focus{border-color:var(--a-main);outline:none;box-shadow:0 0 0 3px var(--a-soft)}
+.db-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.db-chip{font:inherit;font-size:12.5px;font-weight:700;padding:5px 12px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface);color:var(--muted);transition:.15s var(--ease)}
+.db-chip:hover{border-color:var(--a-mid);color:var(--a-deep)}
+.db-chip.on{background:var(--a-main);border-color:var(--a-main);color:var(--on-main)}
+.db-day{margin:20px 0 0}
+.db-day:first-child{margin-top:0}
+.db-day-head{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--a-deep);
+  padding-bottom:6px;border-bottom:1px solid var(--line);margin-bottom:10px;display:flex;justify-content:space-between}
+.db-item{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px;margin-bottom:9px}
+.db-item-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.db-tag{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.db-tag.trud{background:#E8F2F4;color:#1E5765}
+.db-tag.stop{background:#FBEBE1;color:#8A4526}
+.db-tag.pros_cons{background:#EBF3ED;color:#36593F}
+.db-tag.problem_solving{background:#EBF1F8;color:#2F4666}
+@media (prefers-color-scheme: dark){
+  .db-tag.trud{background:#1F343A;color:#A7DCE7}
+  .db-tag.stop{background:#3A241C;color:#F2C0AA}
+  .db-tag.pros_cons{background:#223427;color:#B8DBC0}
+  .db-tag.problem_solving{background:#212E40;color:#B8D1F0}
+}
+.db-time{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.db-title{font-weight:700;font-size:14.5px;color:var(--ink)}
+.db-rate{margin-left:auto;font-weight:700;font-size:13px;color:var(--a-deep);background:var(--a-tint);
+  padding:2px 9px;border-radius:999px;border:1px solid var(--a-mid)}
+.db-del{background:none;border:0;color:var(--muted);cursor:pointer;font-size:17px;padding:0 4px;line-height:1}
+.db-del:hover{color:var(--no)}
+.db-details{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:13.5px;color:var(--ink-2);
+  white-space:pre-line;line-height:1.48}
+@media (max-width:560px){.db-stats{grid-template-columns:1fr}}
+
 /* ---------- панель «накрывает сейчас» ---------- */
 .sos-btn{position:fixed;right:18px;bottom:18px;z-index:45;
   background:var(--a-main, #B26039)!important;color:var(--on-main, #fff)!important;
@@ -433,6 +476,7 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   <a class="tab on" href="stop.html">СТОП</a>
   <a class="tab " href="pros_cons.html">ЗА/ПРОТИВ</a>
   <a class="tab " href="problem_solving.html">РЕШЕНИЕ</a>
+  <a class="tab" href="diary.html">ДНЕВНИК</a>
   <a class="tab icon" href="stop.pdf" download><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M8 2.5v9"/><path d="M4.4 8.2 8 11.8l3.6-3.6"/><path d="M2.8 13.5h10.4"/></svg>PDF</a>
   <button class="tab icon" type="button" id="print-btn"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4.5 6V2.5h7V6"/><rect x="2.5" y="6" width="11" height="5" rx="1.4"/><path d="M4.5 9.5h7v4h-7z"/></svg>Печать</button>
 </div><div class="progress"><i id="progress-bar"></i></div></nav>
@@ -631,24 +675,69 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     return b;
   }
 
-  /* ---------- дневник практики ---------- */
-  var LOGKEY = "dbt-log-" + CFG.skill;
-  var logEntries = store.get(LOGKEY, []);
-  function lastRating() {
-    for (var i = logEntries.length - 1; i >= 0; i--) if (typeof logEntries[i].v === "number") return logEntries[i].v;
+  /* ---------- единая БД дневника (dbt-journal-v1) ---------- */
+  var DBKEY = "dbt-journal-v1";
+  var SKILL_NAMES = { trud: "ТРУД", stop: "СТОП", pros_cons: "ЗА/ПРОТИВ", problem_solving: "РЕШЕНИЕ" };
+  if (navigator.storage && navigator.storage.persist) { navigator.storage.persist().catch(function () {}); }
+
+  function loadDB() {
+    var db = store.get(DBKEY, null);
+    if (!db) {
+      db = [];
+      ["trud", "stop", "pros_cons", "problem_solving"].forEach(function (sk) {
+        var old = store.get("dbt-log-" + sk, []);
+        old.forEach(function (item, idx) {
+          db.push({
+            id: item.ts + "-" + sk + "-" + idx,
+            ts: item.ts,
+            skill: sk,
+            skillName: SKILL_NAMES[sk] || sk,
+            label: item.label || "",
+            v: typeof item.v === "number" ? item.v : null,
+            prev: typeof item.prev === "number" ? item.prev : null,
+            extra: item.extra || "",
+            details: item.details || ""
+          });
+        });
+      });
+      db.sort(function (a, b) { return a.ts - b.ts; });
+      if (db.length) store.set(DBKEY, db);
+    }
+    return db;
+  }
+  function saveDB(db) {
+    if (db.length > 2000) db = db.slice(-2000);
+    store.set(DBKEY, db);
+  }
+  function lastRating(db) {
+    for (var i = db.length - 1; i >= 0; i--) {
+      if (db[i].skill === CFG.skill && typeof db[i].v === "number") return db[i].v;
+    }
     return null;
   }
-  function addLog(label, v, extra) {
-    var prev = lastRating();
-    logEntries.push({ ts: Date.now(), label: label, v: (typeof v === "number" ? v : null), extra: extra || "", prev: prev });
-    if (logEntries.length > 60) logEntries = logEntries.slice(-60);
-    store.set(LOGKEY, logEntries); renderLog();
+  function addLog(label, v, extra, details) {
+    var db = loadDB();
+    var prev = lastRating(db);
+    db.push({
+      id: Date.now() + "-" + Math.random().toString(36).slice(2, 6),
+      ts: Date.now(),
+      skill: CFG.skill,
+      skillName: SKILL_NAMES[CFG.skill] || CFG.acronym || CFG.skill,
+      label: label,
+      v: typeof v === "number" ? v : null,
+      prev: prev,
+      extra: extra || "",
+      details: details || ""
+    });
+    saveDB(db);
+    renderLog();
   }
   function renderLog() {
     var box = $("#log-list"); if (!box) return;
     box.innerHTML = "";
-    if (!logEntries.length) { box.innerHTML = '<p class="log-empty">Пока пусто. Отметьте накал после практики — записи останутся в этом браузере.</p>'; return; }
-    logEntries.slice().reverse().forEach(function (e) {
+    var list = loadDB().filter(function (e) { return e.skill === CFG.skill; });
+    if (!list.length) { box.innerHTML = '<p class="log-empty">Пока пусто. Отметьте накал или нажмите «Сохранить в дневник» — все записи появятся здесь и на вкладке «Дневник».</p>'; return; }
+    list.slice(-30).reverse().forEach(function (e) {
       var li = document.createElement("li");
       var d = new Date(e.ts);
       var delta = "";
@@ -660,30 +749,17 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     });
   }
   function logText() {
-    if (!logEntries.length) return "";
+    var list = loadDB().filter(function (e) { return e.skill === CFG.skill; });
+    if (!list.length) return "";
     var lines = ["Дневник практики · навык " + CFG.acronym + " (" + CFG.latin + ")"];
-    logEntries.forEach(function (e) {
+    list.forEach(function (e) {
       var d = new Date(e.ts);
       lines.push(pad(d.getDate()) + "." + pad(d.getMonth() + 1) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) +
         " — " + e.label + (e.extra ? " (" + e.extra + ")" : "") +
-        (typeof e.v === "number" ? ", накал " + (typeof e.prev === "number" ? e.prev + "→" : "") + e.v : ""));
+        (typeof e.v === "number" ? ", накал " + (typeof e.prev === "number" ? e.prev + "→" : "") + e.v : "") +
+        (e.details ? "\n" + e.details : ""));
     });
     return lines.join("\n");
-  }
-  function copyText(txt) {
-    if (!txt) { toast("Пока нечего копировать"); return; }
-    var done = function () { toast("Скопировано — можно отправить терапевту"); };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(txt).then(done, function () { fallbackCopy(txt, done); });
-    } else fallbackCopy(txt, done);
-  }
-  function fallbackCopy(txt, done) {
-    var ta = document.createElement("textarea");
-    ta.value = txt; ta.style.position = "fixed"; ta.style.opacity = "0";
-    document.body.appendChild(ta); ta.select();
-    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
-    document.body.removeChild(ta);
-    if (ok) done(); else { window.prompt("Скопируйте текст вручную:", txt); }
   }
 
   /* ---------- строка оценки накала ---------- */
@@ -1079,13 +1155,16 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       });
       row.appendChild(acts); sorter.appendChild(row);
     });
-    var save = btn("Записать наблюдение", "ghost sm");
+    var save = btn("Сохранить в дневник", "", "arrow");
     save.style.marginTop = "14px";
     save.addEventListener("click", function () {
       var a = $("#ob-in", host).value.trim(), b = $("#ob-out", host).value.trim();
       if (!a && !b) { toast("Сначала опишите, что внутри и снаружи"); return; }
-      addLog("СТОП · О (наблюдение)", null, (a ? "внутри: " + a.slice(0, 60) : "") + (b ? " снаружи: " + b.slice(0, 60) : ""));
-      toast("Наблюдение записано");
+      var det = (a ? "Внутри: " + a : "") + (a && b ? "\n" : "") + (b ? "Снаружи: " + b : "");
+      addLog("СТОП · О (наблюдение)", null, (a || b).slice(0, 50), det);
+      $("#ob-in", host).value = "";
+      $("#ob-out", host).value = "";
+      toast("Сохранено в дневник, поля очищены");
     });
     host.appendChild(save);
   }
@@ -1115,11 +1194,25 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       pick.appendChild(b);
     });
     var row = document.createElement("div"); row.className = "ctrls"; row.style.marginTop = "12px";
-    var save = btn("Записать шаг", "", "arrow");
+    var save = btn("Сохранить в дневник", "", "arrow");
     save.addEventListener("click", function () {
       var goal = $("#w-goal", host).value.trim();
-      addLog("СТОП · П (осознанный шаг)", null, chosen + (goal ? " · цель: " + goal.slice(0, 60) : ""));
-      toast("Шаг записан: " + chosen);
+      var better = $("#w-better", host).value.trim();
+      var worse = $("#w-worse", host).value.trim();
+      var other = $("#w-other", host).value.trim();
+      var det = [
+        "Выбранный шаг: " + chosen,
+        goal ? "Цель: " + goal : "",
+        better ? "Что сделает лучше: " + better : "",
+        worse ? "Что сделает хуже: " + worse : "",
+        other ? "Что может чувствовать другой: " + other : ""
+      ].filter(Boolean).join("\n");
+      addLog("СТОП · П (осознанный шаг)", null, chosen, det);
+      $("#w-goal", host).value = "";
+      $("#w-better", host).value = "";
+      $("#w-worse", host).value = "";
+      $("#w-other", host).value = "";
+      toast("Сохранено в дневник, поля очищены");
     });
     row.appendChild(save); host.appendChild(row);
     host.appendChild(rateRow("СТОП · П (после шага)", function (v) { addLog("СТОП · П (после шага)", v, chosen); }));
@@ -1174,9 +1267,19 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       '<div class="tool-head"><span class="tool-title">Сводка матрицы и решение</span><span class="tool-sub">шаг 4</span></div>' +
       '<div class="tool-hint" id="pc-summary" style="color:var(--ink);margin-bottom:12px"></div>' +
       '<div class="ctrls">' +
+      '<button class="btn sm" type="button" id="pc-save-db"><span>Сохранить в дневник</span></button>' +
       '<button class="btn ghost sm" type="button" id="pc-refresh"><span>Обновить сводку</span></button>' +
-      '<button class="btn ghost sm" type="button" id="pc-copy"><span>Скопировать матрицу</span></button>' +
+      '<button class="btn ghost sm" type="button" id="pc-copy"><span>Скопировать</span></button>' +
       '</div>';
+    function formatPC(d) {
+      return [
+        "Импульс: " + (d.imp || "—"),
+        "ЗА срыв (сейчас): " + (d.p1 || "—"),
+        "ПРОТИВ срыва (потом): " + (d.c1 || "—"),
+        "ЗА удержаться (потом): " + (d.p2 || "—"),
+        "ПРОТИВ удержаться (сейчас): " + (d.c2 || "—")
+      ].join("\n");
+    }
     function renderSum() {
       var d = getPCData();
       var imp = d.imp ? "Импульс: «" + d.imp + "». " : "";
@@ -1187,20 +1290,24 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     renderSum();
     $("#pc-refresh", host).addEventListener("click", renderSum);
     $("#pc-copy", host).addEventListener("click", function () {
-      var d = getPCData();
-      var txt = [
-        "Матрица «За и против»",
-        "Импульс: " + (d.imp || "—"),
-        "ЗА срыв (сейчас): " + (d.p1 || "—"),
-        "ПРОТИВ срыва (потом): " + (d.c1 || "—"),
-        "ЗА удержаться (потом): " + (d.p2 || "—"),
-        "ПРОТИВ удержаться (сейчас): " + (d.c2 || "—")
-      ].join("\n");
-      copyText(txt);
+      copyText("Матрица «За и против»\n" + formatPC(getPCData()));
     });
-    host.appendChild(rateRow("ЗА/ПРОТИВ · после взвешивания", function (v) {
+    $("#pc-save-db", host).addEventListener("click", function () {
       var d = getPCData();
-      addLog("ЗА/ПРОТИВ · решение", v, d.imp ? d.imp.slice(0, 50) : "");
+      if (!d.imp && !d.p1 && !d.c1 && !d.p2 && !d.c2) { toast("Сначала заполните хотя бы одно поле матрицы"); return; }
+      var rInp = $(".rate input[type=range]", host);
+      var rateVal = rInp ? parseInt(rInp.value, 10) : null;
+      addLog("ЗА/ПРОТИВ · матрица", rateVal, d.imp ? d.imp.slice(0, 50) : "", formatPC(d));
+      store.del("dbt-pc-matrix");
+      ["#pc-imp", "#pc-p1", "#pc-c1", "#pc-p2", "#pc-c2"].forEach(function (sel) {
+        var el = $(sel); if (el) el.value = "";
+      });
+      renderSum();
+      toast("Матрица сохранена в дневник, поля очищены");
+    });
+    host.appendChild(rateRow("ЗА/ПРОТИВ · накал", function (v) {
+      var d = getPCData();
+      addLog("ЗА/ПРОТИВ · оценка накала", v, d.imp ? d.imp.slice(0, 50) : "");
     }));
   }
 
@@ -1334,42 +1441,70 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
   function toolPS7(host) {
     var d = getPSData();
     host.innerHTML =
-      '<div class="tool-head"><span class="tool-title">Оценка результата и экспорт</span><span class="tool-sub">шаг 7 из 7</span></div>' +
+      '<div class="tool-head"><span class="tool-title">Оценка результата и сохранение</span><span class="tool-sub">шаг 7 из 7</span></div>' +
       '<div class="field"><label for="ps-result">Что получилось? Достигнута ли цель и снизилась ли эмоция?</label>' +
       '<textarea id="ps-result" rows="2" placeholder="Сработало — закрепляю. Не сработало — возвращаюсь к Шагу 5..."></textarea></div>' +
       '<div class="ctrls" style="margin-top:12px">' +
-      '<button class="btn sm" type="button" id="ps-copy"><span>Скопировать разбор (7 шагов)</span></button>' +
+      '<button class="btn sm" type="button" id="ps-save-db"><span>Сохранить в дневник</span></button>' +
+      '<button class="btn ghost sm" type="button" id="ps-copy"><span>Скопировать</span></button>' +
       '<button class="btn ghost sm" type="button" id="ps-back5"><span>Не сработало → к Шагу 5</span></button>' +
       '<button class="btn ghost sm" type="button" id="ps-clear"><span>Очистить</span></button>' +
       '</div>';
     var res = $("#ps-result", host), clr = $("#ps-clear", host);
     res.value = d.result || "";
     res.addEventListener("input", function () { var cur = getPSData(); cur.result = res.value; setPSData(cur); });
-    $("#ps-back5", host).addEventListener("click", function () {
-      var target = document.getElementById("step-5");
-      if (target) { target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }); toast("Выберите другое решение на Шаге 5"); }
-    });
-    $("#ps-copy", host).addEventListener("click", function () {
-      var cur = getPSData();
+    function formatPS(cur) {
       var allIdeas = (cur.ideas || []).map(function (x) { return (x.picked ? "[✓] " : "[ ] ") + x.text; }).join("\n");
-      copyText([
-        "Решение проблемы · 7 шагов ДБТ (М. Линехан)",
+      return [
         "1. Ситуация: " + (cur.event || "—"),
         "2. Факты: " + (cur.facts || "—"),
         "3. Цель: " + (cur.goal || "—"),
         "4–5. Идеи и выбор:\n" + (allIdeas || "—"),
         "6. Первый шаг: " + (cur.step || "—") + (cur.planB ? " (План Б: " + cur.planB + ")" : ""),
         "7. Результат: " + (cur.result || "—")
-      ].join("\n"));
+      ].join("\n");
+    }
+    function resetAllPS() {
+      store.del("dbt-ps-data");
+      res.value = "";
+      ["#ps-event", "#ps-facts", "#ps-goal", "#ps-step", "#ps-planb"].forEach(function (sel) {
+        var el = $(sel); if (el) el.value = "";
+      });
+      var idList = $("#ps-ideas"), idCnt = $("#ps-count"), pList = $("#ps-pick-list");
+      if (idList) idList.innerHTML = "";
+      if (idCnt) idCnt.textContent = "0 идей";
+      if (pList) pList.innerHTML = '<div class="tool-hint">Сначала добавьте идеи на Шаге 4.</div>';
+      $$(".ps-chk input").forEach(function (cb) { cb.checked = false; });
+      var w = $("#ps-warn"), ok = $("#ps-ok");
+      if (w) w.classList.add("on");
+      if (ok) ok.style.display = "none";
+    }
+    $("#ps-back5", host).addEventListener("click", function () {
+      var target = document.getElementById("step-5");
+      if (target) { target.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }); toast("Выберите другое решение на Шаге 5"); }
+    });
+    $("#ps-copy", host).addEventListener("click", function () {
+      copyText("Решение проблемы · 7 шагов ДБТ (М. Линехан)\n" + formatPS(getPSData()));
+    });
+    $("#ps-save-db", host).addEventListener("click", function () {
+      var cur = getPSData();
+      if (!cur.event && !cur.facts && !cur.goal && !(cur.ideas && cur.ideas.length) && !cur.step && !cur.result) {
+        toast("Сначала заполните хотя бы один шаг разбора"); return;
+      }
+      var rInp = $(".rate input[type=range]", host);
+      var rateVal = rInp ? parseInt(rInp.value, 10) : null;
+      addLog("РЕШЕНИЕ · 7 шагов", rateVal, (cur.goal || cur.event || "").slice(0, 50), formatPS(cur));
+      resetAllPS();
+      toast("Разбор сохранён в дневник, поля очищены");
     });
     var armed = false, pt;
     clr.addEventListener("click", function () {
       if (!armed) { armed = true; clr.querySelector("span").textContent = "Точно очистить?"; pt = setTimeout(function () { armed = false; clr.querySelector("span").textContent = "Очистить"; }, 3500); return; }
       clearTimeout(pt); armed = false; clr.querySelector("span").textContent = "Очистить";
-      store.del("dbt-ps-data"); res.value = "";
+      resetAllPS();
       toast("Разбор очищен");
     });
-    host.appendChild(rateRow("РЕШЕНИЕ · после 7 шагов", function (v) { addLog("РЕШЕНИЕ · 7 шагов", v, getPSData().goal.slice(0, 50)); }));
+    host.appendChild(rateRow("РЕШЕНИЕ · накал", function (v) { addLog("РЕШЕНИЕ · оценка накала", v, getPSData().goal.slice(0, 50)); }));
   }
 
   var TOOLS = {
@@ -1519,13 +1654,205 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
     var pb = $("#print-btn"); if (pb) pb.addEventListener("click", function () { window.print(); });
   }
 
+  /* ---------- страница «Дневник» (браузер БД) ---------- */
+  function initDiary() {
+    var host = $("#diary-app"); if (!host) return;
+    var state = { q: "", date: "", skill: "all" };
+
+    function escH(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+    function ymd(ts) {
+      var d = new Date(ts);
+      return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+    }
+    function dayTitle(ymdStr) {
+      var today = ymd(Date.now());
+      var yest = ymd(Date.now() - 86400000);
+      var p = ymdStr.split("-");
+      var months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", " ноября", "декабря"];
+      var label = parseInt(p[2], 10) + " " + months[parseInt(p[1], 10) - 1].trim() + " " + p[0];
+      if (ymdStr === today) return "Сегодня · " + label;
+      if (ymdStr === yest) return "Вчера · " + label;
+      return label;
+    }
+    function downloadFile(name, content, mime) {
+      var blob = new Blob([content], { type: mime });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    function filtered() {
+      var db = loadDB().slice().sort(function (a, b) { return b.ts - a.ts; });
+      var q = state.q.trim().toLowerCase();
+      return db.filter(function (e) {
+        if (state.skill !== "all" && e.skill !== state.skill) return false;
+        if (state.date && ymd(e.ts) !== state.date) return false;
+        if (q) {
+          var hay = (e.skillName + " " + e.label + " " + e.extra + " " + e.details).toLowerCase();
+          if (hay.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderStats() {
+      var db = loadDB();
+      var totalEl = $("#db-stat-total"), weekEl = $("#db-stat-week"), dropEl = $("#db-stat-drop");
+      if (!totalEl) return;
+      totalEl.textContent = db.length;
+      var weekAgo = Date.now() - 7 * 86400000;
+      weekEl.textContent = db.filter(function (e) { return e.ts >= weekAgo; }).length;
+      var deltas = db.filter(function (e) { return typeof e.prev === "number" && typeof e.v === "number"; });
+      if (deltas.length) {
+        var avg = deltas.reduce(function (s, e) { return s + (e.prev - e.v); }, 0) / deltas.length;
+        dropEl.textContent = (avg >= 0 ? "−" : "+") + Math.abs(avg).toFixed(1) + " б.";
+      } else {
+        dropEl.textContent = "—";
+      }
+    }
+
+    function render() {
+      renderStats();
+      var listEl = $("#db-list");
+      var items = filtered();
+      if (!items.length) {
+        listEl.innerHTML = '<p class="log-empty" style="padding:16px 0">Записей по выбранным фильтрам не найдено.</p>';
+        return;
+      }
+      var groups = [], map = {};
+      items.forEach(function (e) {
+        var key = ymd(e.ts);
+        if (!map[key]) { map[key] = []; groups.push({ key: key, list: map[key] }); }
+        map[key].push(e);
+      });
+      listEl.innerHTML = groups.map(function (g) {
+        var cards = g.list.map(function (e) {
+          var d = new Date(e.ts);
+          var tm = pad(d.getHours()) + ":" + pad(d.getMinutes());
+          var rate = "";
+          if (typeof e.v === "number") {
+            rate = '<span class="db-rate">накал: ' + (typeof e.prev === "number" ? e.prev + " → " : "") + e.v + '</span>';
+          }
+          var det = e.details ? '<div class="db-details">' + escH(e.details) + '</div>' : "";
+          return '<div class="db-item" data-id="' + escH(e.id) + '">' +
+            '<div class="db-item-top">' +
+            '<span class="db-tag ' + escH(e.skill) + '">' + escH(e.skillName) + '</span>' +
+            '<span class="db-time">' + tm + '</span>' +
+            '<span class="db-title">' + escH(e.label) + (e.extra ? " · " + escH(e.extra) : "") + '</span>' +
+            rate +
+            '<button type="button" class="db-del" title="Удалить запись">×</button>' +
+            '</div>' + det + '</div>';
+        }).join("");
+        return '<div class="db-day"><div class="db-day-head"><span>' + dayTitle(g.key) + '</span><span>' + g.list.length + ' зап.</span></div>' + cards + '</div>';
+      }).join("");
+
+      $$(".db-del", listEl).forEach(function (b) {
+        b.addEventListener("click", function () {
+          var card = b.closest(".db-item");
+          var id = card && card.dataset.id;
+          if (!id) return;
+          var db = loadDB().filter(function (x) { return x.id !== id; });
+          saveDB(db);
+          render();
+          toast("Запись удалена");
+        });
+      });
+    }
+
+    var qInp = $("#db-q"), dInp = $("#db-date"), clrDate = $("#db-date-clear");
+    if (qInp) qInp.addEventListener("input", function () { state.q = qInp.value; render(); });
+    if (dInp) dInp.addEventListener("change", function () { state.date = dInp.value; render(); });
+    if (clrDate) clrDate.addEventListener("click", function () { state.date = ""; if (dInp) dInp.value = ""; render(); });
+
+    $$(".db-chip", host).forEach(function (ch) {
+      ch.addEventListener("click", function () {
+        state.skill = ch.dataset.skill || "all";
+        $$(".db-chip", host).forEach(function (x) { x.classList.toggle("on", x === ch); });
+        render();
+      });
+    });
+
+    var expTxt = $("#db-exp-txt"), expJson = $("#db-exp-json"), impJson = $("#db-imp-json"), impFile = $("#db-imp-file");
+    if (expTxt) expTxt.addEventListener("click", function () {
+      var items = filtered();
+      if (!items.length) { toast("Нет записей для экспорта"); return; }
+      var lines = ["ДБТ · ДНЕВНИК ПРАКТИКИ (" + ymd(Date.now()) + ")", "========================================", ""];
+      var curDay = "";
+      items.forEach(function (e) {
+        var day = ymd(e.ts);
+        if (day !== curDay) { curDay = day; lines.push("=== " + dayTitle(day).toUpperCase() + " ==="); }
+        var d = new Date(e.ts);
+        var r = typeof e.v === "number" ? " | накал: " + (typeof e.prev === "number" ? e.prev + " -> " : "") + e.v : "";
+        lines.push("[" + pad(d.getHours()) + ":" + pad(d.getMinutes()) + "] " + e.skillName + " — " + e.label + (e.extra ? " (" + e.extra + ")" : "") + r);
+        if (e.details) lines.push(e.details);
+        lines.push("");
+      });
+      downloadFile("dbt-diary-" + ymd(Date.now()) + ".txt", lines.join("\n"), "text/plain;charset=utf-8");
+      toast("Текстовый отчёт (.txt) скачан");
+    });
+
+    if (expJson) expJson.addEventListener("click", function () {
+      var backup = {
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        journal: loadDB(),
+        cards: {
+          trud: store.get("dbt-card-trud", {}),
+          stop: store.get("dbt-card-stop", {}),
+          pros_cons: store.get("dbt-card-pros_cons", {}),
+          problem_solving: store.get("dbt-card-problem_solving", {})
+        }
+      };
+      downloadFile("dbt-backup-" + ymd(Date.now()) + ".json", JSON.stringify(backup, null, 2), "application/json;charset=utf-8");
+      toast("Резервная копия (.json) скачана");
+    });
+
+    if (impJson && impFile) {
+      impJson.addEventListener("click", function () { impFile.click(); });
+      impFile.addEventListener("change", function () {
+        var f = impFile.files && impFile.files[0]; if (!f) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            var parsed = JSON.parse(reader.result);
+            var incoming = Array.isArray(parsed) ? parsed : (parsed.journal || []);
+            var cur = loadDB();
+            var ids = {}; cur.forEach(function (x) { ids[x.id] = true; });
+            var added = 0;
+            incoming.forEach(function (item) {
+              if (item && item.ts && !ids[item.id]) { cur.push(item); ids[item.id] = true; added++; }
+            });
+            cur.sort(function (a, b) { return a.ts - b.ts; });
+            saveDB(cur);
+            if (parsed.cards) {
+              Object.keys(parsed.cards).forEach(function (k) {
+                if (parsed.cards[k] && Object.keys(parsed.cards[k]).length) store.set("dbt-card-" + k, parsed.cards[k]);
+              });
+            }
+            render();
+            toast("Загружено новых записей: " + added);
+          } catch (err) {
+            toast("Ошибка чтения файла резервной копии");
+          }
+          impFile.value = "";
+        };
+        reader.readAsText(f);
+      });
+    }
+
+    render();
+  }
+
   /* ---------- запуск ---------- */
   function init() {
     $$(".tool").forEach(function (host) {
       var kind = host.dataset.tool;
       if (TOOLS[kind]) { try { TOOLS[kind](host); } catch (e) { host.innerHTML = '<div class="tool-hint">Инструмент недоступен в этом режиме. Шаги навыка описаны выше.</div>'; } }
     });
-    initScale(); initCard(); initSOS(); initScroll(); renderLog();
+    initScale(); initCard(); initSOS(); initScroll(); renderLog(); initDiary();
     var lc = $("#log-copy"), lx = $("#log-clear");
     if (lc) lc.addEventListener("click", function () { copyText(logText()); });
     if (lx) {
@@ -1533,7 +1860,8 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       lx.addEventListener("click", function () {
         if (!armed) { armed = true; lx.querySelector("span").textContent = "Точно очистить?"; t = setTimeout(function () { armed = false; lx.querySelector("span").textContent = "Очистить"; }, 3500); return; }
         clearTimeout(t); armed = false; lx.querySelector("span").textContent = "Очистить";
-        logEntries = []; store.del(LOGKEY); renderLog(); toast("Дневник очищен");
+        var rest = loadDB().filter(function (e) { return e.skill !== CFG.skill; });
+        saveDB(rest); store.del("dbt-log-" + CFG.skill); renderLog(); toast("Записи этого навыка очищены");
       });
     }
     document.addEventListener("visibilitychange", function () {
