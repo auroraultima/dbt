@@ -328,7 +328,15 @@
         if (s === "idle") { start.innerHTML = ICO.play + "<span>Старт</span>"; }
       }
     });
-    start.addEventListener("click", function () { cd.running ? cd.pause() : cd.start(); });
+    function toggleRun() { cd.running ? cd.pause() : cd.start(); }
+    start.addEventListener("click", toggleRun);
+    dial.el.setAttribute("role", "button");
+    dial.el.setAttribute("tabindex", "0");
+    dial.el.setAttribute("aria-label", "Запустить или поставить таймер на паузу");
+    dial.el.addEventListener("click", toggleRun);
+    dial.el.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleRun(); }
+    });
     reset.addEventListener("click", function () { cd.reset(st.get()); paintIdle(); if (cfg.onReset) cfg.onReset(); });
     paintIdle();
     host.appendChild(rateRow(cfg.logLabel, function (v) { addLog(cfg.logLabel, v, cfg.pick ? cfg.pick.value() : ""); }));
@@ -435,11 +443,19 @@
       start.innerHTML = ICO.play + "<span>" + (done ? "Ещё раз" : "Продолжить") + "</span>";
       if (done) { phase.className = "phase"; phase.textContent = "Готово. Оцените накал 0–10."; setOrb(.62, .6); toast("Дыхание завершено. Оцените накал."); SND.done();}
     }
-    start.addEventListener("click", function () {
+    function toggleBreath() {
       if (running) { stop(false); return; }
       if (elapsed >= limit) { elapsed = 0; cycles = 0; }
       running = true; last = 0; start.innerHTML = ICO.pause + "<span>Пауза</span>";
       enter(phaseLeft > 0 && phaseName ? phaseName : "in"); raf = requestAnimationFrame(loop);
+    }
+    start.addEventListener("click", toggleBreath);
+    breath.setAttribute("role", "button");
+    breath.setAttribute("tabindex", "0");
+    breath.setAttribute("aria-label", "Запустить или поставить дыхательный ритм на паузу");
+    breath.addEventListener("click", toggleBreath);
+    breath.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleBreath(); }
     });
     reset.addEventListener("click", function () {
       running = false; cancelAnimationFrame(raf); last = 0; elapsed = 0; cycles = 0; phaseName = "in"; phaseLeft = inhale;
@@ -518,11 +534,19 @@
       if (!running) return;
       paint(); raf = requestAnimationFrame(loop);
     }
-    start.addEventListener("click", function () {
+    function toggleRelax() {
       if (running) { running = false; cancelAnimationFrame(raf); last = 0; start.innerHTML = ICO.play + "<span>Продолжить</span>"; return; }
       if (idx >= GROUPS.length) { idx = 0; }
       running = true; last = 0; start.innerHTML = ICO.pause + "<span>Пауза</span>";
       enter(mode); raf = requestAnimationFrame(loop);
+    }
+    start.addEventListener("click", toggleRelax);
+    dial.el.setAttribute("role", "button");
+    dial.el.setAttribute("tabindex", "0");
+    dial.el.setAttribute("aria-label", "Запустить или поставить релаксацию на паузу");
+    dial.el.addEventListener("click", toggleRelax);
+    dial.el.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleRelax(); }
     });
     skip.addEventListener("click", function () { if (idx < GROUPS.length) next(); });
     reset.addEventListener("click", function () {
