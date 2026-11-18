@@ -198,7 +198,9 @@ ol.how li:before{content:counter(s);position:absolute;left:0;top:.05em;width:22p
 .tool-title{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--a-deep)}
 .tool-sub{font-size:12.5px;color:var(--muted);margin-left:auto}
 .tool-body{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-.dial{position:relative;width:132px;height:132px;flex:none}
+.dial{position:relative;width:132px;height:132px;flex:none;cursor:pointer;border-radius:50%;user-select:none;transition:transform .16s var(--ease)}
+.dial:hover{transform:scale(1.03)}
+.dial:active{transform:scale(.97)}
 .dial svg{width:100%;height:100%;transform:rotate(-90deg)}
 .dial .trk{fill:none;stroke:var(--a-mid);stroke-width:7;opacity:.55}
 .dial .bar{fill:none;stroke:var(--a-main);stroke-width:7;stroke-linecap:round;
@@ -240,7 +242,9 @@ input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;bac
 input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 
 /* дыхательный ритм */
-.breath{position:relative;width:132px;height:132px;flex:none;display:flex;align-items:center;justify-content:center}
+.breath{position:relative;width:132px;height:132px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;user-select:none;transition:transform .16s var(--ease)}
+.breath:hover{transform:scale(1.03)}
+.breath:active{transform:scale(.97)}
 .breath .orb{position:absolute;width:112px;height:112px;border-radius:50%;
   background:radial-gradient(circle at 38% 32%, var(--surface), var(--a-soft) 62%, var(--a-mid));
   border:1px solid var(--a-mid);transform:scale(.62);transition:transform 5s cubic-bezier(.37,0,.63,1)}
@@ -1017,7 +1021,15 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
         if (s === "idle") { start.innerHTML = ICO.play + "<span>Старт</span>"; }
       }
     });
-    start.addEventListener("click", function () { cd.running ? cd.pause() : cd.start(); });
+    function toggleRun() { cd.running ? cd.pause() : cd.start(); }
+    start.addEventListener("click", toggleRun);
+    dial.el.setAttribute("role", "button");
+    dial.el.setAttribute("tabindex", "0");
+    dial.el.setAttribute("aria-label", "Запустить или поставить таймер на паузу");
+    dial.el.addEventListener("click", toggleRun);
+    dial.el.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleRun(); }
+    });
     reset.addEventListener("click", function () { cd.reset(st.get()); paintIdle(); if (cfg.onReset) cfg.onReset(); });
     paintIdle();
     host.appendChild(rateRow(cfg.logLabel, function (v) { addLog(cfg.logLabel, v, cfg.pick ? cfg.pick.value() : ""); }));
@@ -1124,11 +1136,19 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       start.innerHTML = ICO.play + "<span>" + (done ? "Ещё раз" : "Продолжить") + "</span>";
       if (done) { phase.className = "phase"; phase.textContent = "Готово. Оцените накал 0–10."; setOrb(.62, .6); toast("Дыхание завершено. Оцените накал."); SND.done();}
     }
-    start.addEventListener("click", function () {
+    function toggleBreath() {
       if (running) { stop(false); return; }
       if (elapsed >= limit) { elapsed = 0; cycles = 0; }
       running = true; last = 0; start.innerHTML = ICO.pause + "<span>Пауза</span>";
       enter(phaseLeft > 0 && phaseName ? phaseName : "in"); raf = requestAnimationFrame(loop);
+    }
+    start.addEventListener("click", toggleBreath);
+    breath.setAttribute("role", "button");
+    breath.setAttribute("tabindex", "0");
+    breath.setAttribute("aria-label", "Запустить или поставить дыхательный ритм на паузу");
+    breath.addEventListener("click", toggleBreath);
+    breath.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleBreath(); }
     });
     reset.addEventListener("click", function () {
       running = false; cancelAnimationFrame(raf); last = 0; elapsed = 0; cycles = 0; phaseName = "in"; phaseLeft = inhale;
@@ -1207,11 +1227,19 @@ input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
       if (!running) return;
       paint(); raf = requestAnimationFrame(loop);
     }
-    start.addEventListener("click", function () {
+    function toggleRelax() {
       if (running) { running = false; cancelAnimationFrame(raf); last = 0; start.innerHTML = ICO.play + "<span>Продолжить</span>"; return; }
       if (idx >= GROUPS.length) { idx = 0; }
       running = true; last = 0; start.innerHTML = ICO.pause + "<span>Пауза</span>";
       enter(mode); raf = requestAnimationFrame(loop);
+    }
+    start.addEventListener("click", toggleRelax);
+    dial.el.setAttribute("role", "button");
+    dial.el.setAttribute("tabindex", "0");
+    dial.el.setAttribute("aria-label", "Запустить или поставить релаксацию на паузу");
+    dial.el.addEventListener("click", toggleRelax);
+    dial.el.addEventListener("keydown", function (e) {
+      if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggleRelax(); }
     });
     skip.addEventListener("click", function () { if (idx < GROUPS.length) next(); });
     reset.addEventListener("click", function () {

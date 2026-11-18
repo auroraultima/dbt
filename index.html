@@ -194,7 +194,9 @@ ol.how li:before{content:counter(s);position:absolute;left:0;top:.05em;width:22p
 .tool-title{font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--a-deep)}
 .tool-sub{font-size:12.5px;color:var(--muted);margin-left:auto}
 .tool-body{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
-.dial{position:relative;width:132px;height:132px;flex:none}
+.dial{position:relative;width:132px;height:132px;flex:none;cursor:pointer;border-radius:50%;user-select:none;transition:transform .16s var(--ease)}
+.dial:hover{transform:scale(1.03)}
+.dial:active{transform:scale(.97)}
 .dial svg{width:100%;height:100%;transform:rotate(-90deg)}
 .dial .trk{fill:none;stroke:var(--a-mid);stroke-width:7;opacity:.55}
 .dial .bar{fill:none;stroke:var(--a-main);stroke-width:7;stroke-linecap:round;
@@ -236,7 +238,9 @@ input[type=range]::-moz-range-thumb{width:17px;height:17px;border-radius:50%;bac
 input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.1)}
 
 /* дыхательный ритм */
-.breath{position:relative;width:132px;height:132px;flex:none;display:flex;align-items:center;justify-content:center}
+.breath{position:relative;width:132px;height:132px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;user-select:none;transition:transform .16s var(--ease)}
+.breath:hover{transform:scale(1.03)}
+.breath:active{transform:scale(.97)}
 .breath .orb{position:absolute;width:112px;height:112px;border-radius:50%;
   background:radial-gradient(circle at 38% 32%, var(--surface), var(--a-soft) 62%, var(--a-mid));
   border:1px solid var(--a-mid);transform:scale(.62);transition:transform 5s cubic-bezier(.37,0,.63,1)}
