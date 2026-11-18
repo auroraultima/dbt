@@ -1,4 +1,4 @@
-const CACHE = 'dbt-offline-v8';
+const CACHE = 'dbt-offline-v9';
 const FILES = [
   './',
   './index.html',
