@@ -101,7 +101,7 @@ def sections(sk):
   <div class="cover-cta noprint">
     {sos_cta}
     <button class="{step_btn_cls}" type="button" data-jump="step-1">К шагам навыка</button>
-    <a class="btn ghost" href="{sk['id']}.pdf" download>{ICO_DOWN}<span>PDF A5</span></a>
+    <a class="btn ghost" href="{sk['id']}.pdf" download>{ICO_DOWN}<span>Скачать PDF A5</span></a>
   </div>
   <div class="cover-foot">Карманная памятка для клиента · {total_pages} страниц · по навыкам М. Линехан</div>
   {pfoot(sk, 1)}
@@ -218,6 +218,10 @@ def sections(sk):
     </div>
   </div>
   <div class="safety"><b>Важно.</b> {esc(SHARED['safety'])}</div>
+  <div class="ctrls noprint" style="margin-top:14px">
+    <a class="btn ghost sm" href="{sk['id']}.pdf" download>{ICO_DOWN}<span>Скачать PDF A5</span></a>
+    <button class="btn ghost sm" type="button" onclick="window.print()">{ICO_PRINT}<span>Печать</span></button>
+  </div>
   <a class="xlink" href="{other['id']}.html">Следующий буклет серии: {other['acronym']} — {esc(other['tagline'])} {ARROW}</a>
   <div class="sources">{esc(SHARED['sources'][sk['id']])}</div>
   {pfoot(sk, last_page_num)}
